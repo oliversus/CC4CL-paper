@@ -1,0 +1,4 @@
+pdflatex CC4CL.tex
+bibtex CC4CL > makepaper.log
+pdflatex CC4CL.tex
+pdflatex CC4CL.tex >> makepaper.log
