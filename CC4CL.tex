@@ -1,27 +1,7 @@
-%% Copernicus Publications Manuscript Preparation Template for LaTeX Submissions
-%% ---------------------------------
-%% This template should be used for the following class files: copernicus.cls, copernicus2.cls, copernicus_discussions.cls
-%% The class files, the Copernicus LaTeX Manual with detailed explanations regarding the comments
-%% and some style files are bundled in the Copernicus Latex Package which can be downloaded from the different journal webpages.
-%% For further assistance please contact the Publication Production Office (production@copernicus.org).
-%% http://publications.copernicus.org
-
-
-%% Differing commands regarding the specific class files are highlighted.
-
-
-%% copernicus.cls
-%\documentclass[journal abbreviation]{copernicus}
 \documentclass[amt]{style/copernicus}
 
-%% copernicus2.cls
-%\documentclass[journal abbreviation]{copernicus2}
-
-%% copernicus_discussions.cls
-%\documentclass[journal abbreviation, hvmath, online]{copernicus_discussions}
 \usepackage{hyperref} 
 \usepackage{natbib} 
-%\bibliographystyle{plainnat}
 \usepackage{url}
 \usepackage{lineno}
 \usepackage{graphicx}
@@ -30,8 +10,8 @@
 
 \linenumbers
 
-\title{CC4CL - An optimal estimation based cloud retrieval for multi-sensor cloud climatologies}
-
+\title{The Community Cloud retrieval for CLimate (CC4CL). Part I: A
+  framework applied to multiple satellite imaging sensors.}
 
 \author[1]{O. Sus}
 \author[1]{M. Jerg}
@@ -43,14 +23,10 @@
 \author[1]{C. Schlundt}
 \author[1]{M. Stengel}
 \author[1]{R. Hollmann}
-%\author{\dots}
 
-\affil[1]{DWD - Deutscher Wetterdienst, Frankfurterstrasse 135, 63067 Offenbach, Germany}
+\affil[1]{DWD - Deutscher Wetterdienst, Frankfurterstraße 135, 63067 Offenbach, Germany}
 \affil[2]{RAL Space - Rutherford Appleton Laboratory, Chilton, Didcot, OX11 0QX, UK}               
 \affil[3]{University of Oxford}   
-%% The [] brackets identify the author to the corresponding affiliation, 1, 2, 3, etc. should be inserted.
-
-
 
 \runningtitle{CC4CL}
 
@@ -58,346 +34,32 @@
 
 \correspondence{O. Sus\\ oliver.sus@dwd.de}
 
-
-
 \received{}
 \pubdiscuss{} %% only important for two-stage journals
 \revised{}
 \accepted{}
 \published{}
 
-%% These dates will be inserted by the Publication Production Office during the typesetting process.
-
-
 \firstpage{1}
 
-\maketitle  %% Please note that for the copernicus2.cls this command needs to be inserted after \abstract{TEXT}
-
-
+\maketitle  
 
 \begin{abstract}
-Some super smart abstract about ESA Cloud CCI
+Hello abstract.
 \end{abstract}
 
+\input{introduction.tex}
 
-%% only used for copernicus2.cls
-%\abstract{
-% TEXT
-% \keywords{TEXT}}
+\input{processing_chain.tex}
 
+\input{L2_samples.tex}
 
+\input{discussion_conclusions.tex}
 
-\introduction  %% \introduction[modified heading if necessary]
-
-%backround of cloud cci, aims of the project, time series, oe approach, open source community, uncertainties,coherent retrieval etc. state-of-the art of science, existing retrieval approaches, other climatologies
-
-Global long-term observations of geophysical parameters by satellites are an important component in advancing our understanding of the state of the earth-atmosphere-ocean system and its impact on planetary climate. Not only the direct monitoring of these parameters by analysis of long time series is hereby beneficial but also the utilization of the gained data for improvements of climate modeling. A comprehensive characterization of the global energy and water budget is a paramount goal of these efforts. Among the different atmospheric constituents involved clouds not only play a major role, see for example \citet{Kiehl97}, but pose also at the same time a significant challenge to any attempt to characterize their composition and temporal and spatial distribution in the atmosphere due to their high internal and external variability. This is especially true when single passive satellite-borne imagers are used, nonetheless these are the most widely used and available instruments providing global coverage at acceptable cost.Examples for satellites based climatologies exploiting these types of sensors are the International Cloud Climatology Project (ISCCP), see \citet{Rossow99}, the Pathfinder Atmosphere Extended (PATMOS-x) dataset, see \citet{Heidinger09} and \citet{Heidinger12}, and the EUMETSAT Satellite Application Facility on Climate Monitoring (CM SAF) cLoud, Albedo and RAdiation (CLARA-A1) dataset, described in \citet{Karlsson13}. Thus, satellite observations of clouds have been made for about 40 years now, yet many long-term observations and the deduction of trends are complicated by a lack of consistency in the derivation and treatment of the data at various processing and analyzation stages.
-
-In order to tackle the problems outlined above and to advance the knowledge of
-the climate system, the European Space Agency has established the ESA Climate
-Change Initiative program \citep{ESA_CCI_web}. For a detailed
-overview of the scientific background of the program see
-\citet{Hollmann13}. Its purpose in the present initial phase is to focus on
-thirteen Essential Climate Variables (ECVs) out of the three domains ocean,
-atmosphere and land. Among those ECVs are for example ozone, sea surface
-temperature, ice sheets and clouds. The presented work has been carried out as
-part of the cloud ECV component  of ESA's Climate Change Initiative program
-\citep{ESA_Cloud_CCI_web}. The projects main objective is to develop a
-state-of-the-art open source community cloud retrieval algorithm capable of
-processing passive imager data of a number of European and Non-European
-satellites covering several years. Specifically, the used input data spans the
-years 2007 to 2009 of the sensors MODIS on the Aqua and Terra satellites
-\citep{King92}, AVHRR on NOAA-15 to NOAA-18 \citep{Jacobowitz03} and AATSR on ENVISAT. However, only the AVHRR-equivalent channels from MODIS and AATSR are used. The resulting retrieval data is therefore termed ``AVHRR heritage dataset''. Moreover, the project comprises a validation component in which the resulting time series is carefully investigated and compared not only with well established existing climatologies like ISCCP, PATMOS-x, CM SAF and MODIS as well as reanalysis and model data like ERA-Interim and EC-Earth but also where sensor based results are compared directly with A-train observations. %For a complete view of the validation efforts refer to citet{???}.
-The development and application of the algorithm is governed by a number of cornerstones. Those comprise its open source and modular design character and availability in order to enable a later release to and development within the scientific community. Moreover, with regards to its scientific capabilities it is required to process multiple instruments in a consistent and transparent manner, to utilize the provided input coherently and provide output equally physically and radiatively coherent across the solar and thermal spectrum, consistent and simultaneously for all output variables. Moreover, it is required to provide associated uncertainty estimates for the primary retrieval parameters through rigorous mathematical utilization of the input data and error propagation from the input to the output data.
-
-In order to investigate different algorithms for their potential usage and
-applicability in light of the aforementioned criteria, a rigorous and
-comprehensive comparison effort was carried out at the onset of the
-project. Taking part in this investigation, termed ``Round Robin Exercise'',
-were three different algorithms. The operational processing system of the \citet{CMSAF_web}, the CLAVR-X algorithm used to generate the PATMOS-x
-climatology \citep{Heidinger13}, and the Oxford and Rutherford Aerosol and
-Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} which was previously used to produce the GRAPE
-climatology \citep{Thomas09_GRAPE, GRAPE_web}. Details of the assessment and the results can be found in \citet{Stengel15}. All three algorithms were then driven with identical MODIS and AVHRR input data and Era-Interim meteorological background information from five days during the year 2008 and the results where analyzed with respect to CLOUDSAT, Calipso and AMSR-E reference data. This study not only led to a number of recommendations for further retrieval development but also unveiled that there was no clear winner outperforming the other algorithms. In a nutshell it could be concluded that all algorithms produced acceptable results, yet challenging situations like multi-layer clouds, especially in combination with cirrus clouds, created significant difficulties for correct cloud top and cloud phase detection. This problem is generally aggravated by the fact that only the AVHRR-channels from MODIS are used in the study as well as in the presented work here, in order to ensure comparability and continuity, and not the sounding channels which could improve results under the presence of cirrus.
-
-As a result of these findings and due to the general features an optimal
-estimation based algorithm offers, which are in close agreement of the
-required capabilities laid out above, ORAC was selected to serve as core
-retrieval technique for future development and processing of the heritage
-dataset. Right from the onset, development was carried out by several
-different groups participating in ESA Cloud CCI, setting the precedent for the
-future aspired open community driven improvement. During this joint
-development effort, ORAC evolved into the Community OE Cloud Retrieval for
-Climate (CC4CL). As a result, the key components of the retrieval system are
-all freely available through a software subversion system, although it has to
-be noted that the software is work in progress. For a starting point, refer to the
-\citet{ORAC_web} website.
-
-In this paper, the resulting CC4CL retrieval system established during the ESA Cloud CCI project and the resulting data it produced will be presented together with validation results. To this end, section \ref{retrievaloverview} provides an overview of the layout of the retrieval system and introduces the basic principles of the optimal estimation technique as realized in the core component ORAC. Section \ref{resultingdata} briefly introduces the contents of the suite of parameters generated by the retrieval system and section \ref{results} presents various results of the comparison and validation efforts. Section \ref{conclusion} finally summarizes the results and provides an outlook to future research and applications.
-
-%\pagebreak
-
-
-\section{Retrieval Scheme}\label{retrievaloverview}
-
-The retrieval scheme used for the presented study is based on the ORAC optimal estimation algorithm described in \citet{Poulsen12}. The algorithm has been significantly overhauled and extended not least by embedding it in a new processing environment providing applicability to a range of sensors like AVHRR,MODIS and AATSR, unifying the necessary radiative transfer computations for the long and short-wave spectral intervals and applying  novel cloud mask and cloud water phase selection techniques. As CC4CL is used to process multi-year, multi-instrument datasets improvements with regard to required computational resources have been made as well.
-
-
-%However, in order to improve performance required by the high resolution imagers and the large amount of computations and data, all processing steps have been significantly overhauled, rewritten and extended. Moreover, the presented algorithm is capable of processing AATSR, MODIS and AVHRR and differs significantly from the previous implementation with respect to the radiative trasnfer computations and  cloud phase and cloud masking approach. Therefore, in the following sections the main features and methods of the algorithm components are explained.
-
-\subsection{Overall processing layout and input data}\label{proclayout}
-
-%preprocessing, main processing, post-processing, rttov, era-interim input, approach wrt to albdo, emissivity, different imagers, assumptions etc.
-
-%more details about met. quantities, assumptions about cloud proeprties.
-
-The retrieval chain consists of three software components which is partly due
-to the required versatility of the chain: a preprocessing step, a main
-retrieval step and finally a post-processing step, see Figure
-\ref{chainfigure}. Their respective roles is briefly described as follows: the
-preprocessing reads in all input data, which are mainly the ECMWF ERA-Interim
-meteorological fields at 1.125 degrees horizontal resolution, the imager
-radiance and brightness temperature data, the imager geolocation and angular
-information and a number of ancillary files. More details are given
-below. This information is processed and passed to the main retrieval in
-NetCDF files where channel information, angles and position now have a
-unified, sensor independent definition and are also averaged to a
-preprocessing grid. This grid is a global equal angle 0.5 degree lattice. On
-this grid the radiative transfer model RTTOV \citep{RTTOV_web} is applied to compute various clear sky radiative transfer results, see section \ref{oedetails}, for the retrieval. For all imagers RTTOV coefficient files for both short-wave and long-wave channels have been previously derived. Thus, RTTOV v11 can be applied here for both intervals. The yielded radiative transfer results are then also stored in unified, sensor independent NetCDF files. Furthermore, the following corrections have been applied to the data: ??? (ice-snow etc.GARETH)
-
-The stored information is then subsequently passed to the main optimal estimation retrieval. As there is no cloud screening and cloud phase selection at this stage in the retrieval all imager pixels are processed once for each water phase. Therefore, two separate output files are derived which each contain the state vector results and further supporting information about the retrieval performance and quality. Details about the optimal estimation technique and the implementation are given section \ref{oedetails}. Those retrieval results are then read into the post-processing in a third step. Here first cloud phase is determined through a number of tests and subsequently the pixels are separated into clear or cloudy by means of an approach based on an artificial neural network, see Section \ref{maskandphase}. 
-
-% \begin{figure}[t]
-% \vspace*{2mm}
-% \begin{center}
-% %\includegraphics[width=12cm]{images/chain_cropped}
-% \includegraphics[width=8.3cm]{images/chain_cropped}
-% \end{center}
-% \caption{Schematic illustration of the optimal estimation concept.}\label{chainfigure}
-% \end{figure}
-
-\begin{figure}[t]
-\vspace*{2mm}
-\begin{center}
-%\includegraphics[width=12cm]{images/chain_cropped}
-%\includegraphics[width=8.3cm]{images/chain_detail}
-\includegraphics[width=8.3cm]{images/MJ/orac_chain3}
-\end{center}
-\caption{Flowchart of the main algorithm components.}\label{chainfigure}
-\end{figure}
-
-
-
-\subsection{Optimal estimation retrieval approach}\label{oedetails}
-
-%brief introduction in oe method, weaknesses, strengths, uncertainties, derived quantities cth,ctt,cwp, cost, assumptions,look-up tables etc.
-
-The core of the utilized retrieval system is the optimal estimation technique which is implemented in form of the ORAC algorithm. Here only a brief introduction will be given, for further information see \citet{Poulsen12} and \citet{Rodgers09}.
-
-The basic concept of the optimal estimation technique can be gathered from Figure \ref{oefigure}. The state of the atmosphere, including its constituents like cloud- and aerosol properties span the so-called state space. In this case the state vector $x$ representing a point in this space consists of:
-
-\begin{figure}[t]
-\vspace*{2mm}
-\begin{center}
-\includegraphics[width=8.3cm]{images/MJ/oe_concept_better}
-\end{center}
-\caption{Schematic illustration of the optimal estimation concept, adapted from \citet{Rodgers09}.}\label{oefigure}
-\end{figure}
-
-
-\begin{equation}
-x=(log_{10} \tau_{cld},r_{eff},ctp,f,T_s)
-\end{equation}
-
-with the cloud optical thickness $\tau_{cld}$, the effective radius $r_{eff}$, the cloud top pressure $ctp$, the cloud fractional coverage $f$ and the surface temperature $T_s$. In this case the cloud coverage is fixed and set to unity as the discrimination into clear and cloudy pixels is carried out in a postprocessing step. The measurement space is represented by the measurement vector $y$ containing the radiative information in the different channels of the sensor. Three different sensors are taken into account presently. Those are AVHRR on several NOAA platforms, MODIS Aqua and Terra, and AATSR on ENVISAT. However, only the AVHRR-equivalent channels are used from all available channels of the latter two. Table \ref{channeltable} shows the exact channel selection.
-
-% \multicolumn{2}{c}{AVHRR} & \multicolumn{2}{c}{MODIS} & \multicolumn{2}{c}{AATSR}\\\hline
-\begin{table}
-\caption{Approximate centre wavelengths and channel numbers for the three sensors.}
-\begin{tabular}{cccc}\label{channeltable}
-$\lambda$ in $\mu m$ &  AVHRR & MODIS & AATSR\\\hline
-  0.6 & 1 &  1&  2 \\ 
-  0.8 & 2 & 2 & 3\\\hline
-  1.6 & 3A & 6 & 4\\\hline
-  3.7 & 3B & 20 & 5\\
-  11 & 4 & 31 & 6\\
-  12 & 5 & 32 & 7\\
-\end{tabular}
-\end{table}
-
-Those radiance properties measured at the TOA by the sensor are a result of the interaction of incident solar and emitted thermal radiation with the matter in the atmosphere and the properties of the surface. This interaction is formally described by the forward function and mathematically approximated by the forward model $F$:
-
-\begin{equation}\label{oecentral}
-y=F(\hat{x})+\epsilon
-\end{equation}
-
-The term $\epsilon$  contains measurement errors as well as errors linked to the assumptions and approximations made in order to describe the forward function by the forward model. The optimal estimation technique aims at inverting equation \ref{oecentral} by formally maximizing the probability $P(\hat{x}|y,x_a)$ where $x_a$ are a-priori assumptions or knowledge of the state. A maximum value of $P$ is reached by minimizing the cost function:
-\begin{eqnarray}\label{cost}
-J(\hat{x}) &=&(y(\hat{x})-y_m)S_y^{-1}(y(\hat{x})-y_m)^T\\\nonumber
-               &+&(\hat{x}-x_a)S^{-1}_a(\hat{x}-x_a)^T
-\end{eqnarray}
-
-Equation \ref{cost} contains the measurement vector $y_m$, the solution of the state vector $\hat{x}$, the simulated measurement at the solution $y(\hat{x})$, the a-priori of the state $x_a$ as well as the covariance matrix $S_y$ of the measurement and $S_a$ the covariance matrix of the a-priori. One advantageous aspect of the optimal estimation technique is that it yields an uncertainty estimate once the minimization of Equation \ref{cost} has converged in shape of the covariance matrix of the state:
-
-\begin{equation}
-S_x=(K^TS_y^{-1}K+S_a^{-1})^{-1}  \mbox{ with } K_{i,j}=\frac{\partial F_i}{\partial x_j}
-\end{equation}
-
-where $K$ is the Jacobian matrix providing the linear weighting functions of the forward model. In the presented algorithm, $J$ is minimized iteratively by means of the Levenberg-Marquard method. The iteration from step $k$ to $k+1$  then reads:
-
-\begin{eqnarray}\label{iteration}
-x_{k+1} & = & x_k+(S_a^{-1}+K_k^TS_y^{-1}K_k+\gamma I_n)^{-1}\cdot\\\nonumber
-         & & (K_k^TS_y^{-1}(y-F(x_k))-S_a^{-1}(x_k-x_a))
-\end{eqnarray}
-with $k\,\epsilon\, [0,1,\dots]$ and $\gamma$ controlling the step-size between iterations.
-
- Further details of the optimal estimation approach are out of the scope of this paper and can be found in \citet{Rodgers09}. In order to update the simulated measurements from one iteration step to the next in Equation \ref{iteration} one requires estimates of the radiative properties at the intermediate state vector results $F(x_k)$. Here, the contributions of the clear-sky part above and below a cloud layer are computed with the radiative transfer model RTTOV as part of the pre-processing. As the meteorological background fields are expected to be far less variable in space and time then the cloud properties, the atmospheric state is taken from 6-hourly global ERA-Interim reanalysis data. Moreover, those clear-sky contributions are not computed on imager pixel level but rather on the aforementioned preprocessing grid and are then subsequently spatially interpolated to the imager grid. The multiple scattering radiative effects of upwelling and downwelling radiation of the cloud layer, which is considered to be infinitesimally small, are precomputed and stored in look-up tables in order to speed up the computation. As a result the following formulae are used to combine clear and cloudy radiances to yield TOA solar reflectance:
-\begin{eqnarray}
-R(\Omega_o,\Omega_v) & = & e^{-\tau_{ac}/\cos \theta_o}\left [ R_{cld}(\Omega_o,\Omega_v)\right . \\\nonumber
- & + &  \left . \frac{T_{cld}(\Omega_o,2\pi)R_{sfc}(2\pi,2\pi)T_{cld}(2\pi,\Omega_v)}{1-R_{cld}(2\pi,2\pi)R_{sfc}(2\pi,2\pi)e^{-\tau_{bc}/\cos 66^o}}  \right ]\\\nonumber
-% & + &  \left . \frac{T_{cld}(\Omega_o,2\pi)R_{sfc}(2\pi,2\pi)T_{cld}(2\pi,\Omega_v)}{1-R_{cld}(2\pi,2\pi)R_{sfc}(2\pi,2\pi)T^2_{bc}}  \right ]\\\nonumber
- & \cdot & e^{-\tau_{ac}/\cos \theta_v}
-\end{eqnarray}
-
-Hereby $\Omega_o$ denotes the solar incident direction and $\Omega_v$ the satellite viewing direction with $\theta_o$ and $\theta_v$ the respective zenith angles. $R_{cld}$ and $T_{cld}$ are the clouds reflectance and transmittance factors, respectively. The $2\pi$ notation describes the integration over the respective half-space of all incident and/or viewing directions. $R_{sfc}$ stands for the Lambertian reflectance of the surface. $\tau_{bc}$ and $\tau_{ac}$ are the clear sky optical thicknesses of the cloud-free atmosphere below and above the cloud layer.
-
-The upwelling thermal radiation at TOA is:
-\begin{eqnarray}
-L^\uparrow(\Omega_v) &=&\left [L^\uparrow_{bc}(\Omega_v)T_{cld}(2\pi,\Omega_v)+B(T_{top})\epsilon_{cld}\right .\\\nonumber
-                                      &+& \left . L^\downarrow_{ac}R_{cld}(2\pi,\Omega_v)\right ] e^{-\tau_{ac}}+L_{ac}^\uparrow(\Omega_v)
-\end{eqnarray}
-
-with $L^\uparrow_{bc}$, $L^\downarrow_{ac}$ and $ L_{ac}^\uparrow$ the upwelling clear sky radiance at cloud base, the downwelling and upwelling clear sky radiances at cloud top. $B(T_{top})$ is the long-wave emission at cloud top temperature and $\epsilon_{cld}$ is the equally precomputed and tabulated cloud emissivity.
-
-The wavelength dependence of the radiative properties has been omitted in the above formulas. All computations are carried out quasi-monochromatically, meaning that the spectral response function weighted central wavelength has been used. Further details about the computation and combination of those quantities can be gathered from \citet{Poulsen12} (what about another source where the eqn. are derived ??? CAROLINE).
-
-\subsection{Cloud masking and cloud phase determination approach}\label{maskandphase}
-
-%cloud masking approach, cloud phase determination, motivation, a-priori values for ice and liquid etc.
-
-In order to retain maximum flexibility and to make full use of the information content  the OE method provides, there is no explicit cloud masking and cloud phase determination procedure applied prior to and within the application of the main retrieval procedure. In essence this implies that every pixel is processed both for liquid and ice a-priori information. The a-priory values are summarized in Table \ref{apriorytable}. The initial conditions necessary to start the iteration are set equal to the a-priori information.
-
-\begin{table}
-\caption{A-priori values for the state vector elements.}
-\begin{tabular}{ccc}\label{apriorytable}
-Property & Liquid  & Ice\\\hline
-$\log_{10}\tau_{cld}$         &  0.8           &  0.8 \\      
-$r_{eff}$ & 12 $\mu m$ & 30$\mu m$ \\
-$ctp$ & 700 hPa & 400 hPa \\
-$f$ & 1 & 1 \\
-$T_s$ & 300K & 300K\\
-\end{tabular}
-\end{table}
-
-
-Thus, the decision to discriminate between clear and cloudy pixel and liquid and ice water phase among the cloudy pixels hinges on a postprocessing step, see lower part of Figure \ref{chainfigure}. First, the costs for both computations are analyzed and the phase with smaller cost is selected by virtue of a larger probability of this result representing the actual minimum of the the iteration, see Equation \ref{cost}. However, in order to avoid an unrealistic solution, there is a also a sanity check applied if the retrieved cloud optical thickness and effective radius generally fit into the range of typical values for a cloud of the respective phase and a penalty is applied to the cost if this is not the case, see Table \ref{rangetable}. Furthermore, no ice can be present if the retrieved cloud top temperature is above zero degrees Celsius.
-
-\begin{table}
-\caption{Ranges for cloud phase sanity check.}
-\begin{tabular}{cccc}\label{rangetable}
-Phase & COD  & REF\\\hline
-Liquid &  $\tau > 0.1$     &  $0.1 < r_{eff} < 30.0$     \\
-Ice &  $\tau > 0.1$  & $0.1 < r_{eff} < 200.0$
-\end{tabular}
-\end{table}
-
-After the phase has been determined an artificial neural network (ANN) based cloud masking  procedure is applied. As a training dataset collocated retrievals of AVHRR-NOAA18 with CALIPSO have been used covering 12 days of data. Two different sets of networks have been trained to reflect the different information content of the state vector for day and night. For the nighttime ANN the input parameters comprise cloud top pressure, cloud top temperature, surface temeprature, difference between surface and cloud top temperature and a land-sea mask. The daytime ANN uses the same parameters plus cloud optical depth. CALIPSO provided hereby the reference cloud mask by means of a cloud optical thickness ranging from zero to one. The ANN then produces a pseudo-CALIPSO clout optical thickness which is subsequently transformed ino a binary cloud mask by applying thresholds of $0.2$ over sea and $0.3$ over land.
-
-\begin{table}
-\caption{Ranges of $\theta_o$ and used channels for day, night and twilight.}
-\begin{tabular}{ccc}\label{rangetablednt}
- & $\theta_o$  & active channels\\\hline
-day & $\theta_o < 80$\textdegree & 0.6,0.8.1.6,3.7,11,12\\
-twilight &  $\theta_o > 90$\textdegree& 3.7,11,12\\
-night & $80$\textdegree $< \theta_o < 90$\textdegree& 3.7,11,12\\
-\end{tabular}
-\end{table}
-
-
-\section{Resulting data}\label{resultingdata}
-
-The immediate results of the OE algorithm are in satellite pixel resolution and valid for the given location and time of the satellite measurement. These so-called Level-2 (L2) data are then further processed to derive globally gridded monthly averaged results (L3C) as well as globally gridded daily composites (L3U). The former spatially averaged result is computed on a 0.5 degree grid with equal spacing in latitudinal and longitudinal direction while the latter is on a grid with higher resolution of 0.1 degree. All resulting data is stored in the NetCDF-3 format and adheres to the climate and forecast (CF) metadata conventions version 1.5 as far as possible. 
-
-%\subsection{Instanteous results}
-
-For the AVHRR instrument the input data is available in Global Area Coverage (GAC) resolution. This is a reduced resolution compared to the full 1.1km resolution of each pixel at nadir. It is derived by averaging 4 pixels along each scan line. This averaging is also only applied to every third scan line. Usually, this is regarded as representative for 4km resolution, although technically between those 4km along-scan-line-averages there is a 2km gap. As for the MODIS instrument the 1km aggregated input data product available for all channels has been used but only every second pixel along a scan-line and only every second scan line is processed to reduce computational cost. These input data are then fed into the retrieval system as described in section \ref{proclayout} and the main retrieval results which are cloud mask (CM), cloud optical thickness (COT), cloud effective radius (CER), cloud top pressure (CTP), cloud top temperature (CTT),  cloud top height (CTH) and cloud phase (CP) are stored.% in netcdf output files.
-
-%\subsection{Monthly averages and daily composites}
-
-In another processing step, these L2 results are then ingested into an
-averaging algorithm which produces the globally gridded results for each
-month. The output contains mean values of the above mentioned parameters plus
-standard deviations, as well as derived results like 2D ISCCP-like COT-CTP
-histograms. The global daily composite is provided by sampling and gridding
-the data giving pixels with lower satellite viewing angle priority. For further
-details on the applied techniques and the contents of the product suite see
-\citet{ORAC_ATBD, Cloud_CCI_ATBD}.
-
-
-\section{Exemplary results and validation}\label{results}
-
-
-
-\subsection{AVHRR results}
-\subsection{MODIS}
-\subsection{AATSR}
-
-\subsection{Validation}
-
-\begin{center}
-\includegraphics[scale=0.5]{images/MJ/results/l2/rr/Eva_plot_2dhist_cth_AVHRR_CALIPSO_ORAC_alldays_2dhist.png}
-\includegraphics[scale=0.5]{images/MJ/results/l2/rr/Eva_plot_2dhist_cth_AVHRR_CALIPSO_ORAC_alldays_1dhist.png}
-\includegraphics[scale=0.5]{images/MJ/results/l2/rr/Eva_plot_2dhist_cth_AVHRR_CALIPSO_ORAC_alldays_diffhist.png}
-\end{center}
-
-\begin{center}
-\includegraphics[scale=0.5]{images/MJ/results/l2/rr/Eva_plot_2dhist_cwp_AVHRR_AMSRE_ORAC_alldays_2dhist.png}
-\includegraphics[scale=0.5]{images/MJ/results/l2/rr/Eva_plot_2dhist_cwp_AVHRR_AMSRE_ORAC_alldays_1dhist.png}
-\includegraphics[scale=0.5]{images/MJ/results/l2/rr/Eva_plot_2dhist_cwp_AVHRR_AMSRE_ORAC_alldays_diffhist.png}
-\end{center}
-
-
-\begin{center}
-\includegraphics[scale=0.35]{images/MJ/results/l2/cm_hitrate_n18_synop_01_2008_asc.png}
-\includegraphics[scale=0.35]{images/MJ/results/l2/cm_hitrate_n18_synop_01_2008_dsc.png}
-\end{center}
-
-\begin{center}
-\includegraphics[scale=0.35]{images/MJ/results/l2/cm_hitrate_n18_synop_06_2008_asc.png}
-\includegraphics[scale=0.35]{images/MJ/results/l2/cm_hitrate_n18_synop_06_2008_dsc.png}
-\end{center}
-
-\begin{center}
-\includegraphics[scale=0.35]{images/MJ/results/l2/caliop_cc4cl_cm.png}
-\includegraphics[scale=0.35]{images/MJ/results/l2/caliop_clara_cm.png}
-\end{center}
-
-\begin{center}
-\includegraphics[scale=0.35]{images/MJ/results/l2/caliop_cc4cl_ctp.png}
-\includegraphics[scale=0.35]{images/MJ/results/l2/caliop_clara_ctp.png}
-\end{center}
-
-\conclusions[Conclusions and outlook]\label{conclusion}
-
-\begin{acknowledgements}
-We would like to thank all members of the Cloud CCI team for their contributions throughout the project which lead to this paper. We would also like to thank ESA for funding the Cloud CCI project under contract 4000101773/10/I-LG. Furthermore our thanks go to NASA for generously providing us with the MODIS Collection 6 radiance data and ECMWF for providing support and assistance with their computing facilities which were used for development and processing.
-\end{acknowledgements}
-
+\input{acknowledgements.tex}
 
 \bibliographystyle{style/copernicus}
 \bibliography{CC4CL}
-
-%\begin{thebibliography}{}
-
-%\bibitem[AUTHOR(YEAR)]{LABEL}
-%REFERENCE 1
-
-%\bibitem[AUTHOR(YEAR)]{LABEL}
-%REFERENCE 2
-
-%...
-
-%\end{thebibliography}
-
 
 %% Literature citations
 %% command                        & example result
