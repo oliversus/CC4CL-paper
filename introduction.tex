@@ -1,0 +1,162 @@
+% ---------------------------------------------------------------------------
+% outline
+% 1) situation
+%    - clouds in the climate system
+%    - existing cloud property retrievals
+%    - motivation of the Cloud CCI project
+% 2) complication
+%    - cloud remote sensing problems:
+%      - overlap
+%      - spatial extent vs. sensor resolution
+%      - night-time vs day-time retrievals
+%      - clouds over bright surfaces
+%    - satellite data limitations:
+%      - temporal coverage: AVHRR
+%      - spatial resolution: MODIS, AATSR
+%      - spectral resolution: MODIS, AATSR
+%      - sounders (HIRS) and lidar (CALIOP on CALIPSO) vs imagers 
+%      --> need to merge best of both worlds whilst accounting for
+%          (inter-)calibration issues, orbital drift, changes in spectral resolution
+%    - retrieval shortcomings
+%      - availability of temporally consistent auxiliary datasets (e.g. BRDF,
+%        atmospheric state, snow + sea-ice coverage)
+%      - thresholding: simple, but no explicit radiative consistency between
+%        observed radiances and retrieved cloud properties; not flexibly applicable
+%        to new channels and/or sensors, no uncertainty quantification
+%      - optimal estimation: complicated but sophisticated, accounting for
+%        radiative consistency; however, local minimum problem; input background
+%        uncertainties difficult to quantify; several OE-related assumptions
+%        satisfied?
+% 3) the CC4CL framework + key questions
+%    - optimal estimation methodology applied as state-of-the-art approach within
+%      cloud retrieval community
+%    - the 4 advantages of CC4CL: consistency, simultaneity, uncertainty,
+%      flexibility
+%    - Are retrieval products as obtained from the various sensors consistent with
+%      each other?
+%    - How do CC4CL cloud property products compare to other existing retrieval
+%      schemes and independent data sources?
+% ---------------------------------------------------------------------------
+
+\introduction
+
+% 1) situation
+
+%   clouds in the climate system 
+Satellite data are an essential source of information in order to
+better understand and predict climate change. Satellites provide global long-term
+observations from which geophysical parameters can be derived. These data are used for
+time-series analysis of climate variables, and also for the assimilation into
+or validation of climate models \citep{Comiso14,Yang13}. A paramount goal of
+these efforts is the comprehensive characterization of the global energy and
+water budgets.
+
+Clouds modify atmospheric windows and radiative forcings of major greenhouse
+gases \citep{Kiehl97}, and thus considerably constrain the global energy
+budget. However, clouds are difficult to quantify in terms of composition and
+temporal or spatial distribution. Observations of passive imagers do not
+sufficiently resolve several important cloud properties, such as
+vertical structure, sub-pixel heterogeneity, and the physical rather than radiatively
+effective cloud boundary. Moreover, several background conditions (state of
+surface and atmosphere, viewing geometry, sensor calibration and spectral
+response uncertainties) complicate cloud retrievals in various ways. These
+complications propagate uncertainties into retrieved cloud properties
+themselves \citep{Hamann14}. Nonetheless, passive satellite imagers are the
+most widely used and available instruments, providing global coverage at
+acceptable cost. 
+
+%   Existing cloud property retrievals
+Examples for satellites based climatologies exploiting these types of sensors are the
+International Cloud Climatology Project (ISCCP) \citep{Rossow99}, the
+Pathfinder Atmosphere Extended (PATMOS-x) dataset
+\citep{Heidinger09,Heidinger12}, and the EUMETSAT Satellite Application
+Facility on Climate Monitoring (CM SAF) cLoud, Albedo and RAdiation (CLARA-A1)
+dataset \citep{Karlsson13}.
+Thus, satellite observations of clouds have
+been made for about 40 years now, yet many long-term observations and the
+deduction of trends are complicated by a lack of consistency in the derivation
+and treatment of the data at various processing and analysis stages.
+
+%   motivation of the Cloud CCI project
+In order to tackle the problems outlined above and to advance the knowledge of
+the climate system, the European Space Agency has established the ESA Climate
+Change Initiative program \citep{ESA_CCI_web,Hollmann13}.
+Its purpose in the present initial phase is to focus on
+thirteen Essential Climate Variables (ECVs) out of the three domains ocean,
+atmosphere and land.
+Among those ECVs are for example ozone, sea surface
+temperature, ice sheets and clouds. 
+The presented work has been carried out as part of the cloud ECV component  of
+ESA's Climate Change Initiative program \citep{ESA_Cloud_CCI_web}.
+The projects main objective is to develop a state-of-the-art open source community
+cloud retrieval algorithm capable of processing passive imager data of a
+number of European and Non-European satellites covering several years.
+Specifically, the used input data span the years 2007 to 2009 of the sensors
+MODIS on the Aqua and Terra satellites \citep{King92}, AVHRR on NOAA-15 to
+NOAA-18 \citep{Jacobowitz03} and AATSR on ENVISAT.
+However, only the AVHRR-equivalent channels from MODIS and AATSR are
+used.
+The resulting retrieval data are therefore termed ``AVHRR heritage
+dataset''. 
+Moreover, the project comprises a validation component in which the
+resulting time series is carefully investigated and compared not only with
+well established existing climatologies like ISCCP, PATMOS-x, CM SAF and MODIS
+as well as reanalysis and model data like ERA-Interim and EC-Earth but also
+where sensor based results are compared directly with A-train
+observations. 
+The development and application of the algorithm is governed by a number of
+cornerstones.
+Those comprise its open source and modular design character and
+availability in order to enable a later release to and development within the
+scientific community.
+Moreover, with regards to its scientific capabilities it
+is required to process multiple instruments in a consistent and transparent
+manner, to utilize the provided input coherently and provide output equally
+physically and radiatively coherent across the solar and thermal spectrum,
+consistent and simultaneously for all output variables.
+Moreover, it is required to provide associated uncertainty estimates for the
+primary retrieval parameters through rigorous mathematical utilization of the
+input data and error propagation from the input to the output data.
+%     Round robin (to 3)
+In order to investigate different algorithms for their potential usage and
+applicability in light of the aforementioned criteria, a rigorous and
+comprehensive comparison effort was carried out at the onset of the
+project.
+Taking part in this investigation, termed ``Round Robin Exercise'',
+were three different algorithms. The operational processing system of the
+\citet{CMSAF_web}, the CLAVR-X algorithm used to generate the PATMOS-x
+climatology \citep{Heidinger13}, and the Oxford and Rutherford Aerosol and
+Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} which was previously used
+to produce the GRAPE climatology \citep{Thomas09_GRAPE, GRAPE_web}.
+Details of the assessment and the results can be found in
+\citet{Stengel15}. All three algorithms were then driven with identical MODIS
+and AVHRR input data and Era-Interim meteorological background information
+from five days during the year 2008 and the results where analyzed with
+respect to CLOUDSAT, Calipso and AMSR-E reference data.
+This study not only led to a number of recommendations for further retrieval
+development but also unveiled that there was no clear winner outperforming the
+other algorithms. 
+In a nutshell it could be concluded that all algorithms produced acceptable
+results, yet challenging situations like multi-layer clouds, especially in
+combination with cirrus clouds, created significant difficulties for correct
+cloud top and cloud phase detection. 
+This problem is generally aggravated by the fact that only the AVHRR-channels from
+MODIS are used in the study as well as in the presented work here, in order to
+ensure comparability and continuity, and not the sounding channels which could
+improve results under the presence of cirrus.
+%       ORAC (to 3, but much shorter)
+As a result of these findings and due to the general features an optimal
+estimation based algorithm offers, which are in close agreement of the
+required capabilities laid out above, ORAC was selected to serve as core
+retrieval technique for future development and processing of the heritage
+dataset.
+Right from the onset, development was carried out by several
+different groups participating in ESA Cloud CCI, setting the precedent for the
+future aspired open community driven improvement.
+During this joint development effort, ORAC evolved into the Community OE Cloud
+Retrieval for Climate (CC4CL).
+As a result, the key components of the retrieval system are
+all freely available through a software subversion system, although it has to
+be noted that the software is work in progress. 
+For a starting point, refer to the
+\citet{ORAC_web} website.
