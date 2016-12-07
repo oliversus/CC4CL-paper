@@ -1,7 +1,65 @@
 \section{L2 data - analysis and initial validation}\label{L2_data}
 
-One up to three scenes, which should ideally be geographically overlapping for AVHRR, MODIS AQUA, AATSR. Brief discussion. Note: also shown in paper II to demonstrate information content and discuss forward/inversion models.
+The three study areas show that CC4CL retrievals of CTP are very close to Calipso values for single layer, optically thick clouds. For NA1 and pixels at $>$ 73.7\textdegree\ N, the CTP bias (CC4CL minus Calipso) is XY, and XY for SIB at $>$ 74\textdegree\ N. In case of multi-layer clouds, CC4CL estimates are often located in between Calipso's top and bottom layer estimates, or even below the lowest layer. For these cases, the optimal estimation algorithm processes satellite signals that are likely to contain radiance contributions from multiple cloud layers. The OE then optimizes the fit between modelled and observed radiances by placing the cloud lower in the atmospheric profile, and so the mixed nature of the satellite data leads to an overestimation of CTP. Considerable underestimation of CTP was never observed (CTP bias min = XY hPa).
 
-Validation of level 2 data:
-Comparison of AVHRR, MODIS, and AATSR with independent datasets (CALIPSO, Synop stations), ideally for one scence with similar orbit overpass times.
-Variables: cloud cover, cloud top pressure, cloud optical thickness.
+There is no clear influence of the underlying land type or topography on retrieval values or the cloud mask. However, the limited sample size does not allow for generalizations. Only for site NA2, Calipso identified cloud-free pixels, XY\% of which were also detected as cloud-free by CC4CL's neural network cloud mask, and as low level water clouds otherwise. In very few cases (XY\%), CC4CL fails to correctly detect clouds. We did not account for fractional cloud coverage, as we set a grid box as cloud covered if any corresponding CC4CL pixel contains cloud information. As a consequence, there are slightly more cloud covered pixels for the spatially higher resolved MODIS and AATSR data than AVHRR.
+
+Cloud phase classification agrees best when CC4CL values are compared with Calipso mid-level clouds, i.e. COT $>$ 0.15. For that layer, \insertVariable{phase_match}75.2\% of pixels agree in cloud phase with CC4CL phase having been rounded to the nearest integer. 
+
+The minimum/mean/maximum time difference between MODIS AQUA and NOAA18 is:  3.35 min/ 4.76 min/ 5.5 min.
+
+Need table for study area summary:
+study areas: NA1, NA2, SIB
+variables: 
+   CTP bias (CC4CL minus Calipso 0, 1, 2) min, mean, max
+   cloud mask: CC4CL, Calipso in \% of pixels per row
+   liquid cloud fraction: CC4CL, Calipso in \% of pixels per row
+
+\subsection{Validation with Calipso}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07221915.png}
+  \caption{Study area NA1 (North America 1). Red (Ch1), green (Ch2), blue (Ch4 - Ch5) image of NOAA18 (left), MODIS AQUA (centre), and AATSR (right) data resampled to 0.01\textdegree$\times$0.01\textdegree\ resolution. Date of observation is 07/22/2008, 19.15 LST.}
+  \label{fig:RGB_07221915}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07222058.png}
+  \caption{Study area NA2 (North America 2). As \autoref{fig:RGB_07221915}, but at 07/22/2008, 20.58 LST.}
+  \label{fig:RGB_07222058}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07270810.png}
+  \caption{Study area SIB (Siberia). As \autoref{fig:RGB_07221915}, but at 07/27/2008, 08.10 LST.}
+  \label{fig:RGB_07270810}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07221915_nocot_uncorrectedCtp.png}
+  \caption{Study area NA1 (North America 1). Top: CTP for CC4CL retrievals (coloured points) and Calipso measurements (vertical bars), and surface elevation and surface type (blue = open water, green = land, grey = snow/ice). The Calipso data are shown for those pressure layers where the cumulative top-to-bottom COD exceeds a threshold value of 0 (top layer), 0.15 (mid layer), and 1 (bottom layer). Bottom: Cloud phase (ice to water = red to blue, cloud free = white, not determined = grey) and cloud type (add reference to cloud type table) for Calipso and CC4CL.}
+  \label{fig:calipso_07221915}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07222058_nocot_uncorrectedCtp.png}
+  \caption{Study area NA2 (North America 2). As \autoref{fig:calipso_07221915}, but at 07/22/2008, 20.58 LST.}
+  \label{fig:calipso_07222058}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07270810_nocot_uncorrectedCtp.png}
+  \caption{Study area SIB (Siberia). As \autoref{fig:calipso_07221915}, but at 07/27/2008, 08.10 LST.}
+  \label{fig:calipso_07271915}
+\end{figure*}
+
+
+% satellite orbits to be analysed:
+% see file L2_samples/collocations.txt
+% selection: $2008/07/22, UTC 19:15 - 19:19, Lat 70 - 73, Lon -109 - -112$

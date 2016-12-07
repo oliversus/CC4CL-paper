@@ -1,13 +1,19 @@
 \documentclass[amt]{style/copernicus}
 
 \usepackage{hyperref} 
+\usepackage[capitalise,noabbrev]{cleveref} 
 \usepackage{natbib} 
 \usepackage{url}
 \usepackage{lineno}
 \usepackage{graphicx}
+\usepackage{url}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\insertVariable}[1]{}
 
 \begin{document}
 
+% \chardef\_=`_
 \linenumbers
 
 \title{The Community Cloud retrieval for CLimate (CC4CL). Part I: A
@@ -24,7 +30,7 @@
 \author[1]{M. Stengel}
 \author[1]{R. Hollmann}
 
-\affil[1]{DWD - Deutscher Wetterdienst, Frankfurterstraße 135, 63067 Offenbach, Germany}
+\affil[1]{DWD - Deutscher Wetterdienst, Frankfurter Straße 135, 63067 Offenbach, Germany}
 \affil[2]{RAL Space - Rutherford Appleton Laboratory, Chilton, Didcot, OX11 0QX, UK}               
 \affil[3]{University of Oxford}   
 
@@ -43,12 +49,15 @@
 \firstpage{1}
 
 \maketitle  
+% \sloppy
 
 \begin{abstract}
 Hello abstract.
 \end{abstract}
 
 \input{introduction.tex}
+
+\input{input_data.tex}
 
 \input{processing_chain.tex}
 
