@@ -24,13 +24,10 @@ for tex in glob.glob(path + "*.tex"):
                             value_old = re.search('[0-9]*\.[0-9]*', found).group()
                             replace = found.replace(value_old, value_new)
                             line = line.replace(found, replace)
-                            # new_f.write(line_new)
-                        #else:
                 new_f.write(line)
 
-    #os.remove(tex)
-    #os.rename(os.path.splitext(tex)[0] + "_test.tex", tex)
-
+    os.remove(tex)
+    os.rename(os.path.splitext(tex)[0] + "_test.tex", tex)
 
 
 
