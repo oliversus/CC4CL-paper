@@ -1,6 +1,6 @@
-\section{Processing chain}\label{processing_chain}
+\section{The CC4CL retrieval system}\label{processing_chain}
 
-\subsection{Round-robin}
+\subsection{Heritage}
 
 % Round robin (to 3)
 In order to investigate different algorithms for their potential usage and
@@ -22,24 +22,101 @@ This study not only led to a number of recommendations for further retrieval
 development but also unveiled that there was no clear winner outperforming the
 other algorithms.
 
-\subsection{The preprocessor}
+\subsection{Preprocessing}
 
 \begin{figure}[h]
-  %\centering
+  % \centering
   \includegraphics[width=0.47\textwidth]{figures/outline_preprocessor.png}
   \caption{Schematic of the CC4CL preprocessor.}
   \label{fig:CC4CL_preprocessor}
 \end{figure}
 
-The CC4CL preprocessor initially defines the dimensions and content of the sensor, surface, and preprocessing grids (\autoref{fig:CC4CL_preprocessor}). 
+The CC4CL preprocessor initially defines the dimensions and content of the sensor, surface, and preprocessing grids (\autoref{fig:CC4CL_preprocessor}).
 
-The sensor and surface grids have the same extent and resolution as the input orbit or granule. The sensor grid is filled with sensor radiances and angles (section \ref{sec:L1_data}), whereas data on surface BRDF (section \ref{sec:BRDF}), snow/ice coverage (from ERA-Interim, section \ref{sec:ERA-Interim}), and surface emissivity (section \ref{sec:emissivity}) are bilinearly interpolated onto the surface grid. We use BRDF data over land only. For sea pixels, the Cox/Munk ocean surface reflectance model calculates BRDF coefficients as a function of ERA-Interim wind speed. The albedo of snow/ice covered pixels is set to globally constant values of 0.958 (Ch1), 0.868 (Ch2), 0.0364 (Ch3), and 0.0 (Ch4), and is area weighted in case of fractional sea/ice cover. 
+The sensor and surface grids have the same extent and resolution as the input orbit or granule. The sensor grid is filled with sensor radiances and angles (section \ref{sec:L1_data}), whereas data on surface BRDF (section \ref{sec:BRDF}), snow/ice coverage (from ERA-Interim, section \ref{sec:ERA-Interim}), and surface emissivity (section \ref{sec:emissivity}) are bilinearly interpolated onto the surface grid. We use BRDF data over land only. For sea pixels, the Cox/Munk ocean surface reflectance model calculates BRDF coefficients as a function of ERA-Interim wind speed. The albedo of snow/ice covered pixels is set to globally constant values of 0.958 (Ch1), 0.868 (Ch2), 0.0364 (Ch3), and 0.0 (Ch4), and is area weighted in case of fractional sea/ice cover.
 
-The preprocessing grid is a regular latitude/longitude grid that covers the extent of the sensor grid, but is defined at a coarser resolution of 0.72\textdegree $\times$ 0.72\textdegree. The preprocessor calculates geolocation values for each grid box, and fills it with data: the average of all sensor angle and surface emissivity values falling into a grid box, and spatially interpolated (nearest neighbour) USGS data (section \ref{sec:USGS}). ERA-Interim variables are defined as surface and profile variables, and were transformed before input to the preprocessing grid as described in section \ref{sec:ERA-Interim}. For profile variables, vertical geopotential coordinates are calculated from pressure coordinates. 
+The preprocessing grid is a regular latitude/longitude grid that covers the extent of the sensor grid, but is defined at a coarser resolution of 0.72\textdegree $\times$ 0.72\textdegree. The preprocessor calculates geolocation values for each grid box, and fills it with data: the average of all sensor angle and surface emissivity values falling into a grid box, and spatially interpolated (nearest neighbour) USGS data (section \ref{sec:USGS}). ERA-Interim variables are defined as surface and profile variables, and were transformed before input to the preprocessing grid as described in section \ref{sec:ERA-Interim}. For profile variables, vertical geopotential coordinates are calculated from pressure coordinates.
 
 The preprocessor then calls the cloud mask (section \ref{sec:CloudMask}) and the cloud typing (section \ref{sec:Pavolonis}) algorithms, and writes output data to the surface grid. Finally, RTTOV is executed on the preprocessing grid data as defined by ERA-Interim surface and profile variables. RTTOV outputs above and below cloud transmission for shortwave channels, and radiances (above cloud up- and downwelling, below cloud upwelling), transmission (above and below cloud), and emissivity for longwave channels.
 
 All data are written to NetCDF files as subsequent input to the main processor ORAC. As we determine the cloud mask and phase in the preprocessor, ORAC can optionally be run only on cloudy pixels and one phase to reduce processing time.
+
+\subsection{CC4CL cloud retrieval}
+
+\subsubsection{Cloud masking}\label{sec:CloudMask}
+
+CC4CL applies a set of artificial neural networks (ANN) for cloud masking, one for each of the illumination conditions day, night, and twilight. The ANNs are multilayer perceptrons with one input layer, one hidden layer with 50 neurons, and one output layer, which produces pseudo CALIOP cloud optical depth (ANNCOD) ranging from 0 to 1.
+
+\begin{table}[h]
+  \caption{Threshold values applied to ANNCOD data for cloud mask classification.}
+  \begin{tabular}{llllll|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
+    \hline
+    day & night & twilight & land & sea & snow/ice & threshold \\
+    \hline
+    % day
+    x   &       &          & x    &     &          & 0.2  \\
+    x   &       &          & x    &     & x        & 0.35 \\
+    x   &       &          &      & x   &          & 0.1  \\
+    x   &       &          &      & x   & x        & 0.4  \\ \hline
+    % night
+    & x     &          & x    &     &          & 0.3  \\
+    & x     &          & x    &     & x        & 0.35 \\
+    & x     &          &      & x   &          & 0.2  \\
+    & x     &          &      & x   & x        & 0.4  \\ \hline
+    % twilight
+    &       & x        & x    &     &          & 0.3  \\
+    &       & x        & x    &     & x        & 0.4  \\
+    &       & x        &      & x   &          & 0.35 \\
+    &       & x        &      & x   & x        & 0.4  \\ \hline
+  \end{tabular}
+  \label{tab:ANN_thresholds}
+\end{table}
+
+The various ANNs were trained with NOAA-18 AVHRR L1c data, auxiliary information, and cloud optical depth (COD) ``truth'' data obtained from the CALIPSO satellite's LIDAR called CALIOP at 532 nm (\mbox{CAL\textunderscore LID\textunderscore L2\textunderscore 05kmCLay-Prov-V3-01}). AVHRR Ch3a data were generally excluded. We trained the day ANN with all remaining AVHRR channels, but also excluded Ch3b to be consistent with those NOAA platforms that switch between Ch3b transmission at night and Ch3a at day (NOAA-16, NOAA-17, MetopA). For night and twilight conditions, we produced ANNs both with and without Ch3b data input. This was necessary to avoid misclassification of very cold clouds and/or land surfaces due to Ch3b's very low signal-to-noise ratio. Next to the round robin days (?), we selected 12 additional representative training days in 2008 that satisfy basic requirements in terms of collocation between NOAA-18 and CALIPSO, representation of cloud optical depth seasonality, and global coverage. Prior to training, CALIPSO COD values were set to be $\le$ 1. Auxiliary data input are the ERA-Interim skin temperature, a snow/ice mask derived from ERA-Interim snow depth and sea ice concentration, and the USGS land/sea mask. Finally, we applied a simple correction algorithm to remove a viewing-angle dependency of retrieved ANNCOD.
+
+The binary cloud mask is finally estimated by classification of ANNCOD data into clear and cloudy through a set of threshold values. The thresholds themselves vary depending on illumination and surface conditions, namely land, sea, and snow/ice cover (\autoref{tab:ANN_thresholds}). As the ANN was trained with AVHRR data only, differences in spectral response functions need to be considered before the ANN can be applied to MODIS and AATSR. We derived appropriate coefficients through linear regression analysis between collocated satellite observations for each input channel pair (\autoref{tab:ANN_coefficients}). The resulting coefficients were applied to MODIS and AATSR satellite data before ANN input.
+
+\begin{table}[h]
+  \caption{Linear regression coefficients between collocated AVHRR and MODIS/AATSR channels.}
+  \begin{tabular}{l|l|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
+    \hline
+    CC4CL channel ID & sensor & regression coefficients \\
+    \hline
+    1 & MODIS & 0.8945 $\times$ ch1 + 2.217 \\
+    & AATSR & 0.8542 $\times$ ch1 \\ \hline
+    2 & MODIS & 0.8336 $\times$ ch2 + 1.749 \\
+    & AATSR & 0.7787 $\times$ ch2 \\ \hline
+    4 & MODIS & 0.9944 $\times$ ch4 + 1.152 \\
+    & AATSR & 1.0626 $\times$ ch4 - 15.777 \\ \hline
+    5 & MODIS & 0.9742 $\times$ ch5 + 7.205 \\
+    & AATSR & 0.9793 $\times$ ch5 + 5.366 \\ \hline
+    6 & MODIS & 0.9676 $\times$ ch6 + 8.408 \\
+    & AATSR & 0.9838 $\times$ ch6 + 4.255 \\
+    \hline
+  \end{tabular}
+  \label{tab:ANN_coefficients}
+\end{table}
+
+We estimate cloud mask uncertainty based on the assumption that this uncertainty is inversely proportional to the difference between retrieved ANNCOD and the threshold applied. As a first step, we quantified a ``truth'' uncertainty or, rather, error. To do so, we generated a CALIOP cloud mask by application of a clear/cloudy threshold value of 0.05. The CALIOP cloud mask is then compared with the collocated ANN mask by quantification of a Percent Correct (PEC) score. PEC is basically the ratio between all correctly classified pixels and the number of all pixels analysed. Finally, the ``truth'' uncertainty is defined as 100 $-$ PEC \%. We then established the statistical relationship between this uncertainty and the ANNCOD difference to its threshold. Before application of the approach, we normalised differences (ND) to 1. We found a linear correlation between uncertainty and ND for clear cases, and a second order polynomial correlation for cloudy cases (\autoref{fig:NN_unc}):
+
+clear:
+\begin{equation}
+  y = 37.275 \times ND + 49.2
+\end{equation}
+
+cloudy:
+\begin{equation}
+  y = 54.133 \times (ND-1)^2 + 1.862
+\end{equation}
+
+The equations of these regression fits are used within CC4CL to quantify cloud mask uncertainty as a function of ND.
+
+\begin{figure}[h]
+  % \centering
+  \includegraphics[width=0.47\textwidth]{figures/NN_uncertainty_EQ.png}
+  \caption{Neural network cloud mask uncertainty}
+  \label{fig:NN_unc}
+\end{figure}
 
 \subsubsection{Cloud typing}\label{sec:Pavolonis}
 
@@ -69,128 +146,45 @@ The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitu
   \label{tab:cloud_types}
 \end{table}
 
-\subsubsection{Cloud masking}\label{sec:CloudMask}
+\subsubsection{OE retrieval of COT, CER and CTP}
+Refer to ORAC paper, but summarize here anyway.
 
-CC4CL applies a set of artificial neural networks (ANN) for cloud masking, one for each of the illumination conditions day, night, and twilight. The ANNs are multilayer perceptrons with one input layer, one hidden layer with 50 neurons, and one output layer, which produces pseudo CALIOP cloud optical depth (ANNCOD) ranging from 0 to 1. 
-
-\begin{table}[h]
-  \caption{Threshold values applied to ANNCOD data for cloud mask classification.}
-  \begin{tabular}{llllll|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
-    \hline
-    day & night & twilight & land & sea & snow/ice & threshold \\
-    \hline
-    % day
-    x   &       &          & x    &     &          & 0.2  \\
-    x   &       &          & x    &     & x        & 0.35 \\
-    x   &       &          &      & x   &          & 0.1  \\
-    x   &       &          &      & x   & x        & 0.4  \\ \hline
-    % night
-        & x     &          & x    &     &          & 0.3  \\
-        & x     &          & x    &     & x        & 0.35 \\
-        & x     &          &      & x   &          & 0.2  \\
-        & x     &          &      & x   & x        & 0.4  \\ \hline
-    % twilight
-        &       & x        & x    &     &          & 0.3  \\
-        &       & x        & x    &     & x        & 0.4  \\
-        &       & x        &      & x   &          & 0.35 \\
-        &       & x        &      & x   & x        & 0.4  \\ \hline
-  \end{tabular}
-  \label{tab:ANN_thresholds}
-\end{table}
-
-The various ANNs were trained with NOAA-18 AVHRR L1c data, auxiliary information, and cloud optical depth (COD) ``truth'' data obtained from the CALIPSO satellite's LIDAR called CALIOP at 532 nm (\mbox{CAL\textunderscore LID\textunderscore L2\textunderscore 05kmCLay-Prov-V3-01}). AVHRR Ch3a data were generally excluded. We trained the day ANN with all remaining AVHRR channels, but also excluded Ch3b to be consistent with those NOAA platforms that switch between Ch3b transmission at night and Ch3a at day (NOAA-16, NOAA-17, MetopA). For night and twilight conditions, we produced ANNs both with and without Ch3b data input. This was necessary to avoid misclassification of very cold clouds and/or land surfaces due to Ch3b's very low signal-to-noise ratio. Next to the round robin days (?), we selected 12 additional representative training days in 2008 that satisfy basic requirements in terms of collocation between NOAA-18 and CALIPSO, representation of cloud optical depth seasonality, and global coverage. Prior to training, CALIPSO COD values were set to be $\le$ 1. Auxiliary data input are the ERA-Interim skin temperature, a snow/ice mask derived from ERA-Interim snow depth and sea ice concentration, and the USGS land/sea mask. Finally, we applied a simple correction algorithm to remove a viewing-angle dependency of retrieved ANNCOD.
-
-The binary cloud mask is finally estimated by classification of ANNCOD data into clear and cloudy through a set of threshold values. The thresholds themselves vary depending on illumination and surface conditions, namely land, sea, and snow/ice cover (\autoref{tab:ANN_thresholds}). As the ANN was trained with AVHRR data only, differences in spectral response functions need to be considered before the ANN can be applied to MODIS and AATSR. We derived appropriate coefficients through linear regression analysis between collocated satellite observations for each input channel pair (\autoref{tab:ANN_coefficients}). The resulting coefficients were applied to MODIS and AATSR satellite data before ANN input.
-
-\begin{table}[h]
-  \caption{Linear regression coefficients between collocated AVHRR and MODIS/AATSR channels.}
-  \begin{tabular}{l|l|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
-    \hline
-    CC4CL channel ID & sensor & regression coefficients \\    
-    \hline
-    1 & MODIS & 0.8945 $\times$ ch1 + 2.217 \\
-      & AATSR & 0.8542 $\times$ ch1 \\ \hline
-    2 & MODIS & 0.8336 $\times$ ch2 + 1.749 \\
-      & AATSR & 0.7787 $\times$ ch2 \\ \hline
-    4 & MODIS & 0.9944 $\times$ ch4 + 1.152 \\
-      & AATSR & 1.0626 $\times$ ch4 - 15.777 \\ \hline
-    5 & MODIS & 0.9742 $\times$ ch5 + 7.205 \\
-      & AATSR & 0.9793 $\times$ ch5 + 5.366 \\ \hline
-    6 & MODIS & 0.9676 $\times$ ch6 + 8.408 \\
-      & AATSR & 0.9838 $\times$ ch6 + 4.255 \\
-    \hline
-  \end{tabular}
-  \label{tab:ANN_coefficients}
-\end{table}
-
-We estimate cloud mask uncertainty based on the assumption that this uncertainty is inversely proportional to the difference between retrieved ANNCOD and the threshold applied. As a first step, we quantified a ``truth'' uncertainty or, rather, error. To do so, we generated a CALIOP cloud mask by application of a clear/cloudy threshold value of 0.05. The CALIOP cloud mask is then compared with the collocated ANN mask by quantification of a Percent Correct (PEC) score. PEC is basically the ratio between all correctly classified pixels and the number of all pixels analysed. Finally, the ``truth'' uncertainty is defined as 100 $-$ PEC \%. We then established the statistical relationship between this uncertainty and the ANNCOD difference to its threshold. Before application of the approach, we normalised differences (ND) to 1. We found a linear correlation between uncertainty and ND for clear cases, and a second order polynomial correlation for cloudy cases (\autoref{fig:NN_unc}):
-
-clear:
-\begin{equation}
-  y = 37.275 \times ND + 49.2
-\end{equation}
-
-cloudy:
-\begin{equation}
-  y = 54.133 \times (ND-1)^2 + 1.862
-\end{equation}
-
-The equations of these regression fits are used within CC4CL to quantify cloud mask uncertainty as a function of ND.
-
-\begin{figure}[h]
-  %\centering
-  \includegraphics[width=0.47\textwidth]{figures/NN_uncertainty_EQ.png}
-  \caption{Neural network cloud mask uncertainty}
-  \label{fig:NN_unc}
-\end{figure}
-
-\subsection{Main processing}
-Refer to ORAC paper
 \subsection{Post-processing}
 For each input pixel, the main processor produces retrieval values for both ice and liquid clouds. The postprocessor will then select the appropriate output variables according to the Pavolonis cloud phase. As described in section \ref{sec:Pavolonis}, the postprocessor changes cloud phase in case retrieved CTT does not match the Pavolonis phase. Finally, output variables are written to primary and secondary NetCDF files.
 
-\begin{table}[h]
-  \caption{CC4CL L2 output variables. NN = neural network.}
-  \begin{tabular}{l|l|l}
+\begin{table*}[h]
+  \caption{CC4CL primary and secondary output. NN = neural network. CV = control vector. pp = postprocessed}
+  \begin{tabular}{l|l|l|l|l}
     \hline
-    variable name & abbrev. & unit \\
+    variable name & abbrev. & unit & type of variable & description \\
     \hline
-    \multicolumn{3}{c}{primary variables} \\
+    \multicolumn{5}{c}{primary variables} \\
     \hline
-    latitude & lat & degree \\
-    longitude & lon & degree \\
-    solar zenith & solzen & degree \\
-    satellite zenith & satzen & degree \\
-    relative azimuth & relaz & degree \\
-    cloud top pressure & ctp & hPa \\
-    cloud top height & cth & kilometer \\
-    cloud top temperature & ctt & kelvin \\
-    cloud liquid water path & cwp & g/m$^2$ \\
-    cloud effective radius & cer & micrometer \\
-    cloud optical thickness & cot & 1 \\
-    NN cloud optical thickness & cccot & 1 \\
-    cloud albedo & cla & 1 \\
-    cloud effective emissivity & cee & 1 \\
-    cloud fraction & cc\textunderscore total & 1 \\
-    NN cloud mask & cldmask & 1 \\
-    cloud phase flag & phflag & 1 \\
-    Pavolonis cloud type & cldtype & 1 \\
-    retrieval convergence flag & conv &  1 \\
-    number of retrieval iterations & niter & 1 \\
-    a priori cost at solution & costja & 1 \\
-    measurement cost at solution & costjm & 1 \\
-    quality control flag & qcflag & 1 \\
-    land/sea flag & lsflag & 1 \\
-    snow/ice mask & siflag & 1 \\
-    illumination flag & ilflag & 1 \\
-    surface temperature & stemp & kelvin \\
+    cloud mask & cldmask & 1 & output of NN & Binary cloud occurrence information for each pixel \\
+    cloud type & cldtype & 1 & output of Pavolonis & ... \\
+    cloud phase & phflag & 1 & output of Pavolonis & ... \\
+    cloud top pressure & ctp & hPa & CV variable & ... \\
+    cloud top pressure uncertainty & ctp\_unc & hPa & CV variable & ...\\
+    cloud effective radius & cer & mic & CV variable & ... \\
+    cloud effective radius uncertainty & cer\_unc & mic & CV variable & ...\\
+    cloud optical thickness & cot & 1 & CV variable & ... \\
+    cloud optical thickness uncertainty & cot\_unc & 1 & CV variable & ...\\
+    surface temperature & stemp & kelvin & CV variable\\
+    surface temperature uncertainty & stemp\_unc & kelvin & CV variable\\
     \hline
     \multicolumn{3}{c}{secondary variables} \\
     \hline
-    cloud optical thickness a priori & cot\textunderscore ap & 1 \\
+    cloud mask uncertainty & cldmask\_unc & 1 & pp & ... \\
+    cloud top height & cth & km & pp & derived from CTP... \\
+    cloud top height uncertainty & cth\_unc & km & pp & derived from CTP... \\
+    cloud top temperature & ctt & kelvin & pp & derived from CTP... \\
+    cloud top temperature uncertainty & ctt\_unc & kelvin & pp & derived from CTP... \\
+    cloud water path & cwp & g/m$^2$ & pp & derived from CER and COT...\\
+    cloud water path uncertainty & cwp\_unc & g/m$^2$ & pp & derived from CER and COT...\\
+    cloud albedo & cla & 1 & pp & derived from CER and COT... \\
+    cloud albedo uncertainty & cla\_unc & 1 & pp & derived from CER and COT... \\
+    cloud effective emissivity & cee & 1 & pp & derived from 10.8 and 12.0 mic... \\
     \hline
   \end{tabular}
   \label{tab:L2_variables}
-\end{table}
-
-
+\end{table*}

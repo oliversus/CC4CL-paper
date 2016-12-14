@@ -67,6 +67,88 @@ Hello abstract.
 
 \input{acknowledgements.tex}
 
+\appendix
+
+\section{ERA-Interim input fields}
+\begin{table}[ht]
+  \caption{ERA-Interim variables used within CC4CL. Variables marked with * are available at 0.1\textdegree spatial resolution, all others default to 0.72\textdegree.}
+  \begin{tabular}{p{3.8cm}|l|r|p{1.5cm}}
+    \hline
+    variable name & abbrev. & ID & unit \\
+    \hline
+    \multicolumn{4}{c}{profile variables} \\
+    \hline
+    Geopotential & Z & 129 & m$^2$ s$^{-2}$ \\
+    Temperature  & T & 130 & K \\
+    Specific humidity & Q & 133 & kg kg$^{-1}$ \\
+    Log. surface pressure & LNSP & 152 & Pa \\
+    Ozone mass mixing ratio & O3 & 203 & kg kg$^{-1}$ \\
+    \hline
+    \multicolumn{4}{c}{surface and single level variables} \\
+    \hline
+    Sea-ice cover* & CI & 31 & (0-1) \\
+    Snow albedo & ASN & 32 & (0-1) \\
+    Sea surface temperature & SSTK & 34 & K \\
+    Total column water vapour & TCWV & 137 & kg m$^{-2}$ \\
+    Snow depth* & SD & 141 & m of water equivalent \\
+    10 metre U wind component & U10M & 165 & m s$^{-1}$ \\
+    10 metre U wind component & V10M & 166 & m s$^{-1}$ \\
+    2 metre temperature & T2M & 167 & K \\
+    Land/sea mask & LSM & 172 & (0,1) \\
+    Skin temperature* & SKT & 235 & K \\
+    \hline
+  \end{tabular}
+  \label{tab:ERA-Interim}
+\end{table}
+
+\section{Full list of variables in CC4CL Level-2 files}    %% Appendix 
+\begin{table}[ht]
+  \caption{CC4CL L2 output variables. NN = neural network.}
+  \begin{tabular}{l|l|l}
+    \hline
+    variable name & abbrev. & unit \\
+    \hline
+    \multicolumn{3}{c}{primary variables} \\
+    \hline
+    latitude & lat & degree \\
+    longitude & lon & degree \\
+    solar zenith & solzen & degree \\
+    satellite zenith & satzen & degree \\
+    relative azimuth & relaz & degree \\
+    cloud top pressure & ctp & hPa \\
+    cloud top height & cth & kilometer \\
+    cloud top temperature & ctt & kelvin \\
+    cloud liquid water path & cwp & g/m$^2$ \\
+    cloud effective radius & cer & micrometer \\
+    cloud optical thickness & cot & 1 \\
+    NN cloud optical thickness & cccot & 1 \\
+    cloud albedo & cla & 1 \\
+    cloud effective emissivity & cee & 1 \\
+    cloud fraction & cc\textunderscore total & 1 \\
+    NN cloud mask & cldmask & 1 \\
+    cloud phase flag & phflag & 1 \\
+    Pavolonis cloud type & cldtype & 1 \\
+    retrieval convergence flag & conv &  1 \\
+    number of retrieval iterations & niter & 1 \\
+    a priori cost at solution & costja & 1 \\
+    measurement cost at solution & costjm & 1 \\
+    quality control flag & qcflag & 1 \\
+    land/sea flag & lsflag & 1 \\
+    snow/ice mask & siflag & 1 \\
+    illumination flag & ilflag & 1 \\
+    surface temperature & stemp & kelvin \\
+    \hline
+    \multicolumn{3}{c}{secondary variables} \\
+    \hline
+    cloud optical thickness a priori & cot\textunderscore ap & 1 \\
+    \hline
+  \end{tabular}
+  \label{tab:L2_variables}
+\end{table}
+
+\subsection{}                               %% Appendix A1, A2, etc.
+
+
 \bibliographystyle{style/copernicus}
 \bibliography{CC4CL}
 

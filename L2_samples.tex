@@ -1,5 +1,16 @@
 \section{L2 data - analysis and initial validation}\label{L2_data}
 
+\subsection{CC4CL cloud properties and uncertainties}
+
+Relative retrieval uncertainties are lowest for CTP and largest for COT (\cref{fig:uncertainties}). Median uncertainties in \% are CTP = \load{NA2_ctp_unc_median}4.7, COT = \load{NA2_cot_unc_median}55.0, CER = \load{NA2_cer_unc_median}13.6, and cloud mask = \load{NA2_cmask_unc_median}13.7. For CTP, \load{NA2_ctp_unc_lt10}90.0 \% of pixels have an uncertainty of $<$ 10 \%. COT uncertainties increase with COT, and a visual inspection of the RGB image (\cref{fig:RGB_07222058}) suggests that largest uncertainties are found in cases of opaque cloud coverage and probably cloud over sea-ice surfaces. CER results are similar to COT, although uncertainties are generally lower. Cloud free areas appear to show increased cloud mask uncertainties, and in particular over sea-ice surface areas. Note that the cloud mask uncertainties have been quantified as a function of the normalized difference to the cloud mask threshold, whereas for CTP, COT, and CER relative retrieval uncertainties (100 $\times$ uncertainty $\div$ retrieved value) are shown. 
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_uncertainties_percent.png}
+  \caption{Relative uncertainties [\%] of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
+  \label{fig:uncertainties}
+\end{figure*}
+
 \subsection{CC4CL data intercomparison}
 
 When visually inspecting CC4CL output for CTP, COT, and CER (\cref{fig:CTP_intercomparison,fig:COT_intercomparison,fig:CER_intercomparison}), the data retrieved from the three different sensors appear highly similar. Main spatial patterns are resolved in all products. The data show that there are more cloud free AVHRR pixels, which is related to the coarser spatial resolution compared to MODIS and AATSR. The LST difference ranges from XY to XY minutes, and thus cloud displacement between observation times is small.
@@ -29,16 +40,16 @@ CTP data are approximately normally distributed (\cref{fig:histograms,tab:retrie
   \includegraphics[width=\textwidth]{figures/07222058_ctp_multi.png}
   \caption{CTP retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
   \label{fig:CTP_intercomparison}
-\end{figure*}
+%\end{figure*}
 
-\begin{figure*}[h]
+%\begin{figure*}[h]
   %\centering
   \includegraphics[width=\textwidth]{figures/07222058_cot_multi.png}
   \caption{COT retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
   \label{fig:COT_intercomparison}
-\end{figure*}
+%\end{figure*}
 
-\begin{figure*}[h]
+%\begin{figure*}[h]
   %\centering
   \includegraphics[width=\textwidth]{figures/07222058_cer_multi.png}
   \caption{CER retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
@@ -52,16 +63,15 @@ CTP data are approximately normally distributed (\cref{fig:histograms,tab:retrie
   \label{fig:histograms}
 \end{figure*}
 
-Relative retrieval uncertainties are lowest for CTP and largest for COT (\cref{fig:uncertainties}). Median uncertainties in \% are CTP = \load{NA2_ctp_unc_median}4.7, COT = \load{NA2_cot_unc_median}55.0, CER = \load{NA2_cer_unc_median}13.6, and cloud mask = \load{NA2_cmask_unc_median}13.7. For CTP, \load{NA2_ctp_unc_lt10}90.0 \% of pixels have an uncertainty of $<$ 10 \%. COT uncertainties increase with COT, and a visual inspection of the RGB image (\cref{fig:RGB_07222058}) suggests that largest uncertainties are found in cases of opaque cloud coverage and probably cloud over sea-ice surfaces. CER results are similar to COT, although uncertainties are generally lower. Cloud free areas appear to show increased cloud mask uncertainties, and in particular over sea-ice surface areas. Note that the cloud mask uncertainties have been quantified as a function of the normalized difference to the cloud mask threshold, whereas for CTP, COT, and CER relative retrieval uncertainties (100 $\times$ uncertainty $\div$ retrieved value) are shown. 
+\subsection{Initial validation with Calipso}
 
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/07222058_uncertainties_percent.png}
-  \caption{Relative uncertainties [\%] of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
-  \label{fig:uncertainties}
-\end{figure*}
+\subsubsection{Methodology and data}\label{sec:calipso_method}
+ 
+We resampled CC4CL L2 data to a regular latitude/longitude grid at 0.1\textdegree\ $\times$ 0.1\textdegree\ resolution (better 0.05?). This resampling is required for a intercomparison of CC4CL L2 data on a common grid, as differences in sensor spatial resolution are reduced when averaging all values available for each grid box. Calipso's Level 2 5 km Cloud Layer data were produced by averaging over $\approx$14 samples beams with 70 m diameter taken every 335 m within a 5 km along-track corridor. Thus, Calipso data have a 70 m across-track $\times$ 5 km along-track spatial resolution, and the size of corresponding CC4CL grid box is approximately 11 km meridionally $\times$ 2.9 to 5.6 km zonally. As a consequence, the CC4CL grid boxes are larger than the reference Calipso pixels, but are still small enough to resolve some of the cloud features that Calipso observes. Note that AVHRR GAC data were produced by averaging 5 neighbouring pixels across-track, but Calipso data were averaged along-track.
+ 
+We found collocations between Calipso, AVHRR, MODIS, and AATSR for three study areas for 07/22/2008 19.15 LST (study area North America 1 = NA1), 07/22/2008 20:58 LST (NA2), and 07/27/2008 08.10 LST (Siberia = SIB). These are located within 60\textdegree\ to 75\textdegree\ N latitude, and contain vegetated land, snow-covered land, open ocean, and sea-ice cover surfaces (\cref{fig:RGB_07221915,fig:RGB_07222058,fig:RGB_07270810}). The Calipso track cuts through the three study areas at an angle, so that about 130 collocated Calipso measurements are available per site. For NA1 and SIB, all Calipso pixels were classified as cloud covered, but for NA2, about half of the pixels are cloud free.
 
-\subsection{Validation with Calipso}
+\subsubsection{Validation results}
 
 The three study areas show that CC4CL retrievals of CTP are very close to Calipso values for single layer, optically thick clouds. The mean CTP bias (CC4CL minus Calipso) is \load{NA1_ctp_bias_part}26.0 hPa for NA1 and pixels at $>$ 73.7\textdegree\ N, and \load{SIB_ctp_bias_part}20.3 hPa for SIB at $>$ 74\textdegree\ N. In case of multi-layer clouds, CC4CL estimates are often located in between Calipso's top and bottom layer estimates, and rarely even below the lowest layer. For these cases, the optimal estimation algorithm processes satellite signals that are likely to contain radiance contributions from multiple cloud layers. The OE then optimizes the fit between modelled and observed radiances by placing the cloud lower in the atmospheric profile, and so the mixed nature of the satellite data leads to an overestimation of CTP. In general, underestimation of CTP is rare (\% of pixels whose CTP is CC4CL $<$ Calipso = \load{NA1_ctp_bias}10.3 (NA1), \load{NA2_ctp_bias}2.2 (NA2), and \load{SIB_ctp_bias}15.8 (SIB)).
 
@@ -76,24 +86,6 @@ For ice clouds, the most frequently occuring cloud types are cirrus (ID=6) for C
   \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07221915.png}
   \caption{Study area NA1 (North America 1). Red (Ch1), green (Ch2), blue (Ch4 - Ch5) image of NOAA18 (left), MODIS AQUA (centre), and AATSR (right) data resampled to 0.01\textdegree$\times$0.01\textdegree\ resolution. Date of observation is 07/22/2008, 19.15 LST.}
   \label{fig:RGB_07221915}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07222058.png}
-  \caption{Study area NA2 (North America 2). As \autoref{fig:RGB_07221915}, but at 07/22/2008, 20.58 LST.}
-  \label{fig:RGB_07222058}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07270810.png}
-  \caption{Study area SIB (Siberia). As \autoref{fig:RGB_07221915}, but at 07/27/2008, 08.10 LST.}
-  \label{fig:RGB_07270810}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
   \includegraphics[width=\textwidth]{figures/calipsoVsCci_07221915_nocot_uncorrectedCtp.png}
   \caption{Study area NA1 (North America 1). Top: CTP for CC4CL retrievals (coloured points) and Calipso measurements (vertical bars), and surface elevation and surface type (blue = open water, green = land, grey = snow/ice). The Calipso data are shown for those pressure layers where the cumulative top-to-bottom COD exceeds a threshold value of 0 (top layer), 0.15 (mid layer), and 1 (bottom layer). Bottom: Cloud phase (ice to water = red to blue, cloud free = white, not determined = grey) and cloud type (add reference to cloud type table) for Calipso and CC4CL.}
   \label{fig:calipso_07221915}
@@ -101,6 +93,9 @@ For ice clouds, the most frequently occuring cloud types are cirrus (ID=6) for C
 
 \begin{figure*}[h]
   %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07222058.png}
+  \caption{Study area NA2 (North America 2). As \autoref{fig:RGB_07221915}, but at 07/22/2008, 20.58 LST.}
+  \label{fig:RGB_07222058}
   \includegraphics[width=\textwidth]{figures/calipsoVsCci_07222058_nocot_uncorrectedCtp.png}
   \caption{Study area NA2 (North America 2). As \autoref{fig:calipso_07221915}, but at 07/22/2008, 20.58 LST.}
   \label{fig:calipso_07222058}
@@ -108,6 +103,9 @@ For ice clouds, the most frequently occuring cloud types are cirrus (ID=6) for C
 
 \begin{figure*}[h]
   %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07270810.png}
+  \caption{Study area SIB (Siberia). As \autoref{fig:RGB_07221915}, but at 07/27/2008, 08.10 LST.}
+  \label{fig:RGB_07270810}
   \includegraphics[width=\textwidth]{figures/calipsoVsCci_07270810_nocot_uncorrectedCtp.png}
   \caption{Study area SIB (Siberia). As \autoref{fig:calipso_07221915}, but at 07/27/2008, 08.10 LST.}
   \label{fig:calipso_07271915}
