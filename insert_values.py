@@ -19,7 +19,11 @@ for tex in glob.glob(path + "*.tex"):
                         m = re.search('insertVariable{.*}[0-9]*\.{1}[0-9]*', word)
                         if m:
                             found = m.group()
-                            variable, value = variables[[i for i, x in enumerate(variables) if x[0] in found][0]]
+                            try:
+                                variable, value = variables[[i for i, x in enumerate(variables) if x[0] in found][0]]
+                            except:
+                                print "no match available in latex_variables.txt, skipping"
+                                continue
                             value_new = value.strip('\n')
                             value_old = re.search('[0-9]*\.[0-9]*', found).group()
                             replace = found.replace(value_old, value_new)

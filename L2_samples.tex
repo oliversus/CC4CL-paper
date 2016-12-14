@@ -1,21 +1,75 @@
 \section{L2 data - analysis and initial validation}\label{L2_data}
 
-The three study areas show that CC4CL retrievals of CTP are very close to Calipso values for single layer, optically thick clouds. For NA1 and pixels at $>$ 73.7\textdegree\ N, the CTP bias (CC4CL minus Calipso) is XY, and XY for SIB at $>$ 74\textdegree\ N. In case of multi-layer clouds, CC4CL estimates are often located in between Calipso's top and bottom layer estimates, and rarely even below the lowest layer. For these cases, the optimal estimation algorithm processes satellite signals that are likely to contain radiance contributions from multiple cloud layers. The OE then optimizes the fit between modelled and observed radiances by placing the cloud lower in the atmospheric profile, and so the mixed nature of the satellite data leads to an overestimation of CTP. Considerable underestimation of CTP was never observed (CTP bias min = \insertVariable{ctp_bias_na1}99.9 (NA1), \insertVariable{ctp_bias_na2}99.9 (NA2), and \insertVariable{ctp_bias_sib}99.9 (SIB) hPa).
+\subsection{CC4CL data intercomparison}
 
-There is no clear influence of the underlying land type or topography on retrieval values or the cloud mask. However, the limited sample size does not allow for generalizations. Only for site NA2, Calipso identified cloud-free pixels, XY\% of which were also detected as cloud-free by CC4CL's neural network cloud mask, and as low level water clouds otherwise. In very few cases (XY\%), CC4CL fails to correctly detect clouds. We did not account for fractional cloud coverage, as we set a grid box as cloud covered if any corresponding CC4CL pixel contains cloud information. As a consequence, there are slightly more cloud covered pixels for the spatially higher resolved MODIS and AATSR data than AVHRR.
+When visually inspecting CC4CL output for CTP, COT, and CER (\cref{fig:CTP_intercomparison,fig:COT_intercomparison,fig:CER_intercomparison}), the data retrieved from the three different sensors appear highly similar. Main spatial patterns are resolved in all products. The data show that there are more cloud free AVHRR pixels, which is related to the coarser spatial resolution compared to MODIS and AATSR. The LST difference ranges from XY to XY minutes, and thus cloud displacement between observation times is small.
 
-Cloud phase classification agrees best when CC4CL values are compared with Calipso mid-level clouds, i.e. COT $>$ 0.15. For that layer, \insertVariable{phase_match}99.9\% of pixels agree in cloud phase with CC4CL phase having been rounded to the nearest integer. 
+CTP data are approximately normally distributed (\cref{fig:histograms,tab:retrieval_statistics}) for all three sensors. The mean value difference between AVHRR and MODIS is not significant, but is generally larger and significant when data are compared to AATSR. Both COT and CER show positive kurtosis and skewness, as values close to 0 are most frequent. Mean value differences are also not significant between MODIS and AATSR for COT, and AVHRR and AATSR for CER. The standard deviation of differences between two sensors are always lowest for AVHRR minus MODIS.
 
-The minimum/mean/maximum time difference between MODIS AQUA and NOAA18 is:  3.35 min/ 4.76 min/ 5.5 min.
+\begin{table*}[t]
+  \caption{Statistics of CTP, COT, and CER retrieval values for study area NA2 and AVHRR (first value in each cell), MODIS (second value), and AATSR (third value). $\Delta$ values are given for AVHRR minus MODIS (first value in each cell), AVHRR minus AATSR (second value), and MODIS minus AATSR (third value). $^{\ast}$t-Test p-value $>$ 0.1, indicating that differences in mean values are not significant.}
+  \begin{tabular}{l|lllll}
+    \hline
+                 & mean & median & stddev & skewness & kurtosis \\
+    \hline
+             CTP & \load{ctpMeanN18}667.2, \load{ctpMeanMYD}665.0, \load{ctpMeanENV}645.2 & \load{ctpMedN18}667.8, \load{ctpMedMYD}668.1, \load{ctpMedENV}632.4 & \load{ctpStdN18}147.5, \load{ctpStdMYD}142.7, \load{ctpStdENV}146.2 & \load{ctpSkewN18}-0.2, \load{ctpSkewMYD}-0.2, \load{ctpSkewENV}0.1 & \load{ctpKurtN18}-0.4, \load{ctpKurtMYD}-0.4, \load{ctpKurtENV}-0.8 \\
+    $\Delta$ CTP & \load{ctpdMeanN18}2.2$^{\ast}$, \load{ctpdMeanMYD}21.9, \load{ctpdMeanENV}19.7 & \load{ctpdMedN18}4.2, \load{ctpdMedMYD}22.3, \load{ctpdMedENV}18.5 & \load{ctpdStdN18}63.0, \load{ctpdStdMYD}138.7, \load{ctpdStdENV}138.9 & \load{ctpdSkewN18}-0.4, \load{ctpdSkewMYD}-0.3, \load{ctpdSkewENV}-0.3 & \load{ctpdKurtN18}8.2, \load{ctpdKurtMYD}1.0, \load{ctpdKurtENV}0.7 \\
+             COT & \load{cotMeanN18}12.3, \load{cotMeanMYD}13.6, \load{cotMeanENV}13.4 & \load{cotMedN18}7.2, \load{cotMedMYD}8.6, \load{cotMedENV}8.8 & \load{cotStdN18}19.8, \load{cotStdMYD}19.7, \load{cotStdENV}17.6 & \load{cotSkewN18}6.6, \load{cotSkewMYD}5.7, \load{cotSkewENV}5.3 & \load{cotKurtN18}60.5, \load{cotKurtMYD}46.2, \load{cotKurtENV}40.8 \\
+    $\Delta$ COT & \load{cotdMeanN18}-1.3, \load{cotdMeanMYD}-1.2, \load{cotdMeanENV}0.2$^{\ast}$ & \load{cotdMedN18}-0.6, \load{cotdMedMYD}-1.2, \load{cotdMedENV}-0.5 & \load{cotdStdN18}16.5, \load{cotdStdMYD}22.0, \load{cotdStdENV}21.3 & \load{cotdSkewN18}0.7, \load{cotdSkewMYD}2.4, \load{cotdSkewENV}1.8 & \load{cotdKurtN18}59.6, \load{cotdKurtMYD}41.5, \load{cotdKurtENV}33.1 \\
+             CER & \load{cerMeanN18}21.1, \load{cerMeanMYD}19.2, \load{cerMeanENV}21.3 & \load{cerMedN18}16.5, \load{cerMedMYD}14.4, \load{cerMedENV}18.1 & \load{cerStdN18}13.0, \load{cerStdMYD}12.1, \load{cerStdENV}10.9 & \load{cerSkewN18}1.1, \load{cerSkewMYD}1.4, \load{cerSkewENV}0.6 & \load{cerKurtN18}1.4, \load{cerKurtMYD}1.2, \load{cerKurtENV}-0.8 \\
+    $\Delta$ CER & \load{cerdMeanN18}1.9, \load{cerdMeanMYD}-0.2$^{\ast}$, \load{cerdMeanENV}-2.1 & \load{cerdMedN18}0.5, \load{cerdMedMYD}-1.0, \load{cerdMedENV}-1.9 & \load{cerdStdN18}7.0, \load{cerdStdMYD}11.6, \load{cerdStdENV}11.3 & \load{cerdSkewN18}0.8, \load{cerdSkewMYD}0.8, \load{cerdSkewENV}0.5 & \load{cerdKurtN18}7.9, \load{cerdKurtMYD}4.4, \load{cerdKurtENV}2.3 \\
+    \hline
+  \end{tabular}
+  \label{tab:retrieval_statistics}
+\end{table*}
 
-Need table for study area summary:
-study areas: NA1, NA2, SIB
-variables: 
-   CTP bias (CC4CL minus Calipso 0, 1, 2) min, mean, max
-   cloud mask: CC4CL, Calipso in \% of pixels per row
-   liquid cloud fraction: CC4CL, Calipso in \% of pixels per row
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_ctp_multi.png}
+  \caption{CTP retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
+  \label{fig:CTP_intercomparison}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_cot_multi.png}
+  \caption{COT retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
+  \label{fig:COT_intercomparison}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_cer_multi.png}
+  \caption{CER retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
+  \label{fig:CER_intercomparison}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_histograms.png}
+  \caption{Density histograms of NOAA18, MODIS AQUA, and AATSR retrieval data for study area NA2 and (a) CTP, (b) CTP differences, (c) COT, (d) COT differences, (e) CER, and (f) CER differences.}
+  \label{fig:histograms}
+\end{figure*}
+
+Relative retrieval uncertainties are lowest for CTP. For that variable, \load{NA2_ctp_unc_lt10}0.9 \% of pixels have an uncertainty of $>$ 10 \%.
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_uncertainties_percent.png}
+  \caption{Uncertainties of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
+  \label{fig:uncertainties}
+\end{figure*}
 
 \subsection{Validation with Calipso}
+
+The three study areas show that CC4CL retrievals of CTP are very close to Calipso values for single layer, optically thick clouds. The mean CTP bias (CC4CL minus Calipso) is \load{NA1_ctp_bias_part}26.0 hPa for NA1 and pixels at $>$ 73.7\textdegree\ N, and \load{SIB_ctp_bias_part}20.3 hPa for SIB at $>$ 74\textdegree\ N. In case of multi-layer clouds, CC4CL estimates are often located in between Calipso's top and bottom layer estimates, and rarely even below the lowest layer. For these cases, the optimal estimation algorithm processes satellite signals that are likely to contain radiance contributions from multiple cloud layers. The OE then optimizes the fit between modelled and observed radiances by placing the cloud lower in the atmospheric profile, and so the mixed nature of the satellite data leads to an overestimation of CTP. In general, underestimation of CTP is rare (\% of pixels whose CTP is CC4CL $<$ Calipso = \load{NA1_ctp_bias}10.3 (NA1), \load{NA2_ctp_bias}2.2 (NA2), and \load{SIB_ctp_bias}15.8 (SIB)).
+
+There is no clear influence of the underlying land type or topography on retrieval values or the cloud mask. However, the limited sample size does not allow for generalizations. Only for site NA2, Calipso identified cloud-free pixels, \load{cfree_cc4cl_and_calipso_NA2}79.2\% of which were also detected as cloud-free by CC4CL's neural network cloud mask, and with few exceptions as low level water clouds otherwise. In few cases, CC4CL fails to detect clouds seen by Calipso (\% of missed clouds = \load{cfree_calipso_cloudy_CC4CL_NA1}8.9 (NA1), \load{cfree_calipso_cloudy_CC4CL_NA2}21.3 (NA2), \load{cfree_calipso_cloudy_CC4CL_SIB}0.6 (SIB)). We did not account for fractional cloud coverage, as we set a grid box as cloud covered if any corresponding CC4CL pixel contains cloud information. As a consequence, there are slightly more cloud covered pixels for the spatially higher resolved MODIS and AATSR data than AVHRR.
+
+There is no Calipso cloud layer for which the comparison with CC4CL phase clearly agrees best. After having rounded CC4CL values to the nearest integer, the percentage of pixels with equal phase is lowest for the top layer at COD $>$ 0 (NA1 = \load{phase_match_calipso_CC4CL_NA1_layer0}49.4 \%, NA2 = \load{phase_match_calipso_CC4CL_NA2_layer0}32.2 \%, SIB = \load{phase_match_calipso_CC4CL_SIB_layer0}62.6 \%), but similar for the mid layer COD $>$ 0.15 (NA1 = \load{phase_match_calipso_CC4CL_NA1_layer1}52.6 \%, NA2 = \load{phase_match_calipso_CC4CL_NA2_layer1}46.5 \%, SIB = \load{phase_match_calipso_CC4CL_SIB_layer1}66.7 \%), and the bottom layer COD $>$ 1 (NA1 = \load{phase_match_calipso_CC4CL_NA1_layer2}46.7 \%, NA2 = \load{phase_match_calipso_CC4CL_NA2_layer2}57.4 \%, SIB = \load{phase_match_calipso_CC4CL_SIB_layer2}66.7 \%). When averaged over all layers, phase agreement is largest for site SIB (\load{phase_match_calipso_CC4CL_SIB_layermean}65.3 \%), and clearly lower for NA1 (\load{phase_match_calipso_CC4CL_NA1_layermean}49.6 \%) and NA2 (\load{phase_match_calipso_CC4CL_NA2_layermean}45.4 \%).
+
+For ice clouds, the most frequently occuring cloud types are cirrus (ID=6) for Calipso and overlap (ID=8) or cirrus (ID=7) for CC4CL. Water cloud types are more heterogeneous and for Calipso predominantly low transparent (ID=0), but altostratus (ID=5) and altocumulus (ID=4) are also frequent. CC4CL water clouds are approximately equally distributed amongst water (ID=3) and supercooled (ID=4) cloud types. Statistics: percentages for most frequent cloud types. Also: Which cloud type is dominant if CC4CL phase is different to Calipso phase?
 
 \begin{figure*}[h]
   %\centering

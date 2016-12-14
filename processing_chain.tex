@@ -43,9 +43,31 @@ All data are written to NetCDF files as subsequent input to the main processor O
 
 \subsubsection{Cloud typing}\label{sec:Pavolonis}
 
-Cloud phase is determined by application of the Pavolonis cloud typing algorithm \citep{Pavolonis05}. The Pavolonis algorithm outputs 6 cloud types, which we then reclassified into water or ice clouds: liquid = fog/warm liquid/supercooled, ice = opaque ice/nonopaque ice/overlap. The algorithm always uses the 0.65-, 11-, and 12-$\mu m$ channel data. It is further designed to read 3.75$\mu m$ data whenever available, and otherwise switches to a 1.65$\mu m$ mode. These two different approaches produce nearly identical results, exept for certain thin clouds and cloud edges \citep{Pavolonis05}. In addition, we introduced two new cloud types within CC4CL. We decided to change phase for ice clouds whose retrieval CTT is to high (new cloud type = SWITCHED\textunderscore TO\textunderscore WATER if CTT $>$ 273.16 K, the freezing point of water), and for water clouds whose CTT is too low (SWITCHED\textunderscore TO\textunderscore ICE if CTT $<$ 233.16 K, the lower limit of supercooled water).
+Cloud phase is determined by application of the Pavolonis cloud typing algorithm \citep{Pavolonis05}. The Pavolonis algorithm outputs 6 cloud types (\cref{tab:cloud_types}), which we then reclassified into water or ice clouds: liquid = fog/warm liquid/supercooled, ice = opaque ice/cirrus/overlap. For CC4CL, the fog type test was deactivated. The algorithm always uses the 0.65-, 11-, and 12-$\mu m$ channel data. It is further designed to read 3.75$\mu m$ data whenever available, and otherwise switches to a 1.65$\mu m$ mode. These two different approaches produce nearly identical results, exept for certain thin clouds and cloud edges \citep{Pavolonis05}. In addition, we introduced two new cloud types within CC4CL. We decided to change phase for ice clouds whose retrieval CTT is to high (new cloud type = SWITCHED\textunderscore TO\textunderscore WATER if CTT $>$ 273.16 K, the freezing point of water), and for water clouds whose CTT is too low (SWITCHED\textunderscore TO\textunderscore ICE if CTT $<$ 233.16 K, the lower limit of supercooled water).
 
 The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitudes, which are often misclassified as opaque ice clouds. Performance is considerably better when the also available VIIRS algorithm is used, which provides additional channels and threshold tests. However, these cannot be applied to our AVHRR heritage dataset \citep{Pavolonis05}.
+
+\begin{table}[h]
+  \caption{Cloud type classification for CC4CL and Calipso.}
+  \begin{tabular}{l|ll}
+    \hline
+    ID & CC4CL & Calipso \\
+    \hline
+    0 & clear & low transparent \\
+    1 & switched to water & low opaque \\
+    2 & fog & stratocumulus \\
+    3 & water & low broken cumulus \\
+    4 & supercooled & altocumulus \\
+    5 & switched to ice & altostratus \\
+    6 & opaque ice & cirrus \\
+    7 & cirrus & deep convective \\
+    8 & overlap & n/a \\
+    % 9 & probably opaque ice & n/a \\
+    % 10 & probably clear & n/a \\
+    \hline
+  \end{tabular}
+  \label{tab:cloud_types}
+\end{table}
 
 \subsubsection{Cloud masking}\label{sec:CloudMask}
 
