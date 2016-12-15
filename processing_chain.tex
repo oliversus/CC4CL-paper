@@ -160,30 +160,30 @@ For each input pixel, the main processor produces retrieval values for both ice 
     \hline
     \multicolumn{5}{c}{primary variables} \\
     \hline
-    cloud mask & cldmask & 1 & output of NN & Binary cloud occurrence information for each pixel \\
-    cloud type & cldtype & 1 & output of Pavolonis & ... \\
-    cloud phase & phflag & 1 & output of Pavolonis & ... \\
-    cloud top pressure & ctp & hPa & CV variable & ... \\
-    cloud top pressure uncertainty & ctp\_unc & hPa & CV variable & ...\\
-    cloud effective radius & cer & mic & CV variable & ... \\
-    cloud effective radius uncertainty & cer\_unc & mic & CV variable & ...\\
-    cloud optical thickness & cot & 1 & CV variable & ... \\
-    cloud optical thickness uncertainty & cot\_unc & 1 & CV variable & ...\\
-    surface temperature & stemp & kelvin & CV variable\\
-    surface temperature uncertainty & stemp\_unc & kelvin & CV variable\\
+    cloud mask & cldmask & 1 & output of NN & Binary cloud occurrence classification \\
+    cloud type & cldtype & 1 & output of Pavolonis method & Categorical cloud type classification \\
+    cloud phase & phflag & 1 & output of Pavolonis method & Binary cloud phase classification \\
+    cloud top pressure & ctp & hPa & CV variable & OE retrieval estimate of cloud top pressure \\
+    cloud top pressure uncertainty & ctp\_unc & hPa & CV variable & OE retrieval uncertainty of cloud top pressure \\
+    cloud effective radius & cer & mic & CV variable & OE retrieval estimate of cloud effective radius \\
+    cloud effective radius uncertainty & cer\_unc & mic & CV variable & OE retrieval uncertainty of cloud effective radius\\
+    cloud optical thickness & cot & 1 & CV variable & OE retrieval estimate of cloud optical thickness \\
+    cloud optical thickness uncertainty & cot\_unc & 1 & CV variable & OE retrieval uncertainty of cloud optical thickness \\
+    surface temperature & stemp & kelvin & CV variable & OE retrieval estimate of surface temperature \\
+    surface temperature uncertainty & stemp\_unc & kelvin & CV variable & OE retrieval uncertainty of surface temperature\\
     \hline
-    \multicolumn{3}{c}{secondary variables} \\
+    \multicolumn{5}{c}{secondary variables} \\
     \hline
-    cloud mask uncertainty & cldmask\_unc & 1 & pp & ... \\
-    cloud top height & cth & km & pp & derived from CTP... \\
-    cloud top height uncertainty & cth\_unc & km & pp & derived from CTP... \\
-    cloud top temperature & ctt & kelvin & pp & derived from CTP... \\
-    cloud top temperature uncertainty & ctt\_unc & kelvin & pp & derived from CTP... \\
-    cloud water path & cwp & g/m$^2$ & pp & derived from CER and COT...\\
-    cloud water path uncertainty & cwp\_unc & g/m$^2$ & pp & derived from CER and COT...\\
-    cloud albedo & cla & 1 & pp & derived from CER and COT... \\
-    cloud albedo uncertainty & cla\_unc & 1 & pp & derived from CER and COT... \\
-    cloud effective emissivity & cee & 1 & pp & derived from 10.8 and 12.0 mic... \\
+    cloud mask uncertainty & cldmask\_unc & 1 & pp & derived from NN output and threshold distance \\
+    cloud top height & cth & km & pp & derived from CTP through interpolation along atmospheric profile \\
+    cloud top height uncertainty & cth\_unc & km & pp & derived from retrieval uncertainty of CTP \\
+    cloud top temperature & ctt & kelvin & pp & derived from CTP through interpolation along atmospheric profile \\
+    cloud top temperature uncertainty & ctt\_unc & kelvin & pp & derived from retrieval uncertainty of CTP \\
+    cloud water path & cwp & g/m$^2$ & pp & derived from CER and COT based on Nakajima and King method \\
+    cloud water path uncertainty & cwp\_unc & g/m$^2$ & pp & derived from retrieval uncertainty of CER and COT \\
+    cloud albedo & cla & 1 & pp & derived from CER and COT based on ? \\
+    cloud albedo uncertainty & cla\_unc & 1 & pp & derived from retrieval uncertainty of CER and COT \\
+    cloud effective emissivity & cee & 1 & pp & derived from 10.8 and 12.0 mic ? \\
     \hline
   \end{tabular}
   \label{tab:L2_variables}

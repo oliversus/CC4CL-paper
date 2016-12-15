@@ -1,5 +1,36 @@
 \conclusions[Discussion and conclusions]\label{conclusions}
-\subsection{Robustness of CC4CL in its practical application}
-\subsection{Limitations (all other than FM limitations, just touching on the latter)}
-\subsection{Comparability of the datasets derived from different sensors (AVHRR, MODIS, AATSR)}
-\subsection{Applicability for climate studies}
+
+\subsection{The flexibility of an optimal etimation approach}
+
+%% - AVHRR and MODIS differences are smallest, AATSR deviates especially for CER (why?)
+%% - differences between sensors are generally significant, with few exceptions
+%% - general patterns reproduced by all sensors nonetheless, so data are comparable and replaceable (e.g. highly resolved MODIS Europe data)
+
+In general, the retrieval values of all control vector variables agree qualitatively. The RGB images show that all major patterns of cloud coverage and structure are resolved by all three sensors. However, AATSR data show largest deviations to the other sensors. It is unlikely that differences in spectral response functions are the reason. MODIS and AATSR heritage channels are relatively close in their spectral response, and certainly closer to each other than to AVHRR on NOAA-18 (cite paper that shows that, maybe Karlsson?). The difference to AVHRR and MODIS is largest for CER, so microphysical processes appear to be most affected. CER and COT are derived from reflectance channels only. We analysed L1 data of heritage channels and found (no) clear diffferences between sensors for the study areas analysed (to be done, if good idea).
+
+The differences between mean values are almost exclusively significant. Thus, from a statistical point of view, the samples we analysed for AVHRR, MODIS, and AATSR have been drawn from different populations. Strictly speaking, retrievals are not interchangeable and significantly different. However, the displacement of clouds during different observation times explains part of these differences (one could analyse time difference vs retrieval value difference to see if there is a relationship). Moreover, a non-significant t-Test result is possibly a too strict metric for estimating the comparability of retrieval results. There is a range of confounding processes that affect each individual retrieval estimate, such as observation times, spectral responses, calibration deficiencies, and a varying amount of cloudy pixels to be compared.
+
+We thus suggest that AVHRR and MODIS data can be used interchangeably, depending on the user's application. AVHRR data provide long-term data recors from 1982, however at a relatively coarse resolution of 5 km $\times$ 3 km. The MODIS data record started in 2000, and is thus not long enough to construct cloud climatologies. However, L1 data are available at 1 km resolution. With CC4CL, we also produced 0.05\textdegree\ lat/lon daily composites for Europe, which is close to MODIS's original resolution in that area. These data provide a more detailed view on cloud features that AVHRR does not provide.
+
+\subsection{The value of uncertainty quantification}
+
+%% outcomes:
+%% - uncertainty analysis reveals insights under which conditions the retrieval is less reliable
+%% - CTP uncertainty clearly lower than CER and COT, which are still affected by bugs
+%% - cloud mask uncertainty a valuable alternative measure
+
+The retrieval uncertainties prove to be an interesting measure. On the one hand, they are an important information for users, e.g. for model validation, data assimilation applications, or climate studies in general. On the other hand, they allow for diagnosis of potential retrieval shortcomes. For example, we see that COT uncertainty scales with COT itself and is thus heteroscedastic. CC4CL COT values are at times unnaturally large, and the associated uncertainty reflects that. Also, it shows under which conditions the optimal estimator does converge at a relatively large cost value. In the cases shown here, large uncertainties are associated with optically thick clouds or underlying snow/ice cover. COT and CER uncertainties are clearly largest, and reflect remaining shortcomings in retrieving these values. Possible explanations are faulty look-up-tables of forward model cloud properties and difficulties to retrieve optical properties for large solar zenith angles (don't think I should mention the superfluous cosine bug here; generally, how should one discuss this knowing that there are clear bugs in the code?).
+
+The cloud mask uncertainty however has been quantified in an independent fashion. It is a valuable information, as a neural network usually does not provide uncertainties of its output. The approach we adopted here is straightforward. When the NN output, which is a pseudo Calipso cloud optical depth, approaches a defined threshold value for cloudiness, the uncertainty increases towards a maximum of 50 \%. This maximum value expresses that a cloud mask value is basically random, as it is equally likely to be cloudy or cloud-free. With that in mind, the cloud mask uncertainty data are easy to interpret. For example, we see that sea-ice pixels classified as cloudy to the North of study area NA2 (\cref{fig:uncertainties}) show uncertainties of 40 - 50 \%. This indicates that the NN is sensitive to bright ground cover, which it might confuse with being clouds. We suggest that users of ESA Cloud\textunderscore cci data should frequently consult cloud mask uncertainties. If a conservative cloud mask is required, it can be easily built by setting a maximum value on acceptable uncertainty.
+
+\subsection{Strengths and weaknesses}
+
+%% - single layer cloud retrievals most accurate 
+%% - multi layer cloud estimates of cloud top pressure are between-layer estimates
+%% - phase determination not satisfying; how good is Calipso though?
+
+
+%% \subsection{Robustness of CC4CL in its practical application}
+%% \subsection{Limitations (all other than FM limitations, just touching on the latter)}
+%% \subsection{Comparability of the datasets derived from different sensors (AVHRR, MODIS, AATSR)}
+%% \subsection{Applicability for climate studies}

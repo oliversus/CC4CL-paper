@@ -61,38 +61,6 @@ We use ERA-Interim data as an apriori and first-guess input for the optimal esti
 
 ERA-Interim's land-surface model still needs to be improved in terms of its simulation of soil hydrology and snow cover. This affects the utilization of satellite data over land surfaces within ERA-Interim, which has negative effects on the representation of clouds and precipitation \citep{ERAInterim}. The confidence in temperature trend estimates however has improved considerably, so that ERA-Interim data have been used as an alternative to observational datasets to monitor climate change \citep{Willett10}.
 
-
-\begin{table}[h]
-  \caption{ERA-Interim variables used within CC4CL. Variables marked with * are available at 0.1\textdegree spatial resolution, all others default to 0.72\textdegree.}
-  \begin{tabular}{p{3.8cm}|l|r|p{1.5cm}}
-    \hline
-    variable name & abbrev. & ID & unit \\
-    \hline
-    \multicolumn{4}{c}{profile variables} \\
-    \hline
-    Geopotential & Z & 129 & m$^2$ s$^{-2}$ \\
-    Temperature  & T & 130 & K \\
-    Specific humidity & Q & 133 & kg kg$^{-1}$ \\
-    Log. surface pressure & LNSP & 152 & Pa \\
-    Ozone mass mixing ratio & O3 & 203 & kg kg$^{-1}$ \\
-    \hline
-    \multicolumn{4}{c}{surface and single level variables} \\
-    \hline
-    Sea-ice cover* & CI & 31 & (0-1) \\
-    Snow albedo & ASN & 32 & (0-1) \\
-    Sea surface temperature & SSTK & 34 & K \\
-    Total column water vapour & TCWV & 137 & kg m$^{-2}$ \\
-    Snow depth* & SD & 141 & m of water equivalent \\
-    10 metre U wind component & U10M & 165 & m s$^{-1}$ \\
-    10 metre U wind component & V10M & 166 & m s$^{-1}$ \\
-    2 metre temperature & T2M & 167 & K \\
-    Land/sea mask & LSM & 172 & (0,1) \\
-    Skin temperature* & SKT & 235 & K \\
-    \hline
-  \end{tabular}
-  \label{tab:ERA-Interim}
-\end{table}
-
 \subsubsection{Land use}\label{sec:USGS}
 
 We downloaded USGS Land Use/Land Cover raster data from the global land cover characteristics database \citep{USGS}. The USGS data are used as a land sea mask within the optimal estimation retrieval, as well as a land cover classificator within the cloud mask and the Pavolonis cloud typing scheme (update on this?). The dataset is defined on a regular lat/lon grid with 0.05\textdegree\ resolution. The USGS land cover classification was primarily derived from 1 km AVHRR NDVI 10-day composites for April 1992 through March 1993 \citep{USGS}. 
