@@ -146,8 +146,8 @@ The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitu
   \label{tab:cloud_types}
 \end{table}
 
-\subsubsection{OE retrieval of COT, CER and CTP}
-Refer to ORAC paper, but summarize here anyway.
+\subsubsection{Optimal estimation retrieval of COT, CER and CTP}
+The optimal estimation retrieval, the Oxford RAL Aerosol and Cloud (ORAC) algorithm, is conceptually based on an inverse problem. The forward model simulates top of atmosphere satellite radiance as a function of atmospheric state and a cloud model. Then, an inverse model attempts to find the optimal fit between the simulated and observed TOA radiances by incrementally varying the parameters of the cloud model. Simulations and measurements are weighted according to measurement errors and uncertainties regarding prior knowledge and the forward model. The important benefits of ORAC are that cloud parameters are retrieved using information in all satellite channels simultaneously, so that the retrieved parameters provide a robust representation of the short-wave and long-wave radiance effects of the observed cloud. Moreover, the algorithm quantifies retrieval uncertainty, which is as a measure of the consistency between the retrieved cloud parameters and the satellite measurments \citep{Poulsen12}. For a more detailed description of the ORAC algorithm see part II of this publication (add citation).
 
 \subsection{Post-processing}
 For each input pixel, the main processor produces retrieval values for both ice and liquid clouds. The postprocessor will then select the appropriate output variables according to the Pavolonis cloud phase. As described in section \ref{sec:Pavolonis}, the postprocessor changes cloud phase in case retrieved CTT does not match the Pavolonis phase. Finally, output variables are written to primary and secondary NetCDF files.

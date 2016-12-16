@@ -6,7 +6,7 @@ Relative retrieval uncertainties are lowest for CTP and largest for COT (\cref{f
 
 \begin{figure*}[h]
   %\centering
-  \includegraphics[width=\textwidth]{figures/07222058_uncertainties_percent.png}
+  \includegraphics[width=\textwidth]{figures/07222058_uncertainties_percent_goodspacing.png}
   \caption{Relative uncertainties [\%] of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
   \label{fig:uncertainties}
 \end{figure*}
@@ -65,8 +65,8 @@ CTP data are approximately normally distributed (\cref{fig:histograms,tab:retrie
 
 \subsection{Initial validation with Calipso}
 
-\subsubsection{Methodology and data}\label{sec:calipso_method}
- 
+\subsubsection{Methodology and data (Ich finde das gehört in das gehört in die ``Data and Methods'' section.)}\label{sec:calipso_method}
+
 We resampled CC4CL L2 data to a regular latitude/longitude grid at 0.1\textdegree\ $\times$ 0.1\textdegree\ resolution (better 0.05?). This resampling is required for a intercomparison of CC4CL L2 data on a common grid, as differences in sensor spatial resolution are reduced when averaging all values available for each grid box. Calipso's Level 2 5 km Cloud Layer data were produced by averaging over $\approx$14 samples beams with 70 m diameter taken every 335 m within a 5 km along-track corridor. Thus, Calipso data have a 70 m across-track $\times$ 5 km along-track spatial resolution, and the size of corresponding CC4CL grid box is approximately 11 km meridionally $\times$ 2.9 to 5.6 km zonally. As a consequence, the CC4CL grid boxes are larger than the reference Calipso pixels, but are still small enough to resolve some of the cloud features that Calipso observes. Note that AVHRR GAC data were produced by averaging 5 neighbouring pixels across-track, but Calipso data were averaged along-track.
  
 We found collocations between Calipso, AVHRR, MODIS, and AATSR for three study areas for 07/22/2008 19.15 LST (study area North America 1 = NA1), 07/22/2008 20:58 LST (NA2), and 07/27/2008 08.10 LST (Siberia = SIB). These are located within 60\textdegree\ to 75\textdegree\ N latitude, and contain vegetated land, snow-covered land, open ocean, and sea-ice cover surfaces (\cref{fig:RGB_07221915,fig:RGB_07222058,fig:RGB_07270810}). The Calipso track cuts through the three study areas at an angle, so that about 130 collocated Calipso measurements are available per site. For NA1 and SIB, all Calipso pixels were classified as cloud covered, but for NA2, about half of the pixels are cloud free.
