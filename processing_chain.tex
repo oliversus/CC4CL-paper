@@ -126,26 +126,25 @@ The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitu
 
 \begin{table}[h]
   \caption{Cloud type classification for CC4CL and Calipso.}
-  \begin{tabular}{l|ll}
+  \begin{tabular}{l|l||l|l}
     \hline
-    ID & CC4CL & Calipso \\
+    ID & CC4CL & ID & Calipso \\
     \hline
-    0 & clear & low transparent \\
-    1 & switched to water & low opaque \\
-    2 & fog & stratocumulus \\
-    3 & water & low broken cumulus \\
-    4 & supercooled & altocumulus \\
-    5 & switched to ice & altostratus \\
-    6 & opaque ice & cirrus \\
-    7 & cirrus & deep convective \\
-    8 & overlap & n/a \\
+    0 & clear & 0 & low transparent \\
+    1 & switched to water & 1 & low opaque \\
+    2 & fog & 2 & stratocumulus \\
+    3 & water & 3 & low broken cumulus \\
+    4 & supercooled & 4 & altocumulus \\
+    5 & switched to ice & 5 & altostratus \\
+    6 & opaque ice & 6 & cirrus \\
+    7 & cirrus & 7& deep convective \\
+    8 & overlap & 8 & n/a \\
     % 9 & probably opaque ice & n/a \\
     % 10 & probably clear & n/a \\
     \hline
   \end{tabular}
   \label{tab:cloud_types}
 \end{table}
-
 \subsubsection{Optimal estimation retrieval of COT, CER and CTP}
 The optimal estimation retrieval, the Oxford RAL Aerosol and Cloud (ORAC) algorithm, is conceptually based on an inverse problem. The forward model simulates top of atmosphere satellite radiance as a function of atmospheric state and a cloud model. Then, an inverse model attempts to find the optimal fit between the simulated and observed TOA radiances by incrementally varying the parameters of the cloud model. Simulations and measurements are weighted according to measurement errors and uncertainties regarding prior knowledge and the forward model. The important benefits of ORAC are that cloud parameters are retrieved using information in all satellite channels simultaneously, so that the retrieved parameters provide a robust representation of the short-wave and long-wave radiance effects of the observed cloud. Moreover, the algorithm quantifies retrieval uncertainty, which is as a measure of the consistency between the retrieved cloud parameters and the satellite measurments \citep{Poulsen12}. For a more detailed description of the ORAC algorithm see part II of this publication (add citation).
 
@@ -153,37 +152,39 @@ The optimal estimation retrieval, the Oxford RAL Aerosol and Cloud (ORAC) algori
 For each input pixel, the main processor produces retrieval values for both ice and liquid clouds. The postprocessor will then select the appropriate output variables according to the Pavolonis cloud phase. As described in section \ref{sec:Pavolonis}, the postprocessor changes cloud phase in case retrieved CTT does not match the Pavolonis phase. Finally, output variables are written to primary and secondary NetCDF files.
 
 \begin{table*}[h]
-  \caption{CC4CL primary and secondary output. NN = neural network. CV = control vector. pp = postprocessed}
+  \caption{CC4CL primary and secondary output. NN = neural network, CV = control vector, PP = postprocessed, PV = \citet{Pavolonis05} algorithm.}
   \begin{tabular}{l|l|l|l|l}
     \hline
-    variable name & abbrev. & unit & type of variable & description \\
+    variable name & abbrev. & unit & origin & description \\
     \hline
     \multicolumn{5}{c}{primary variables} \\
     \hline
-    cloud mask & cldmask & 1 & output of NN & Binary cloud occurrence classification \\
-    cloud type & cldtype & 1 & output of Pavolonis method & Categorical cloud type classification \\
-    cloud phase & phflag & 1 & output of Pavolonis method & Binary cloud phase classification \\
-    cloud top pressure & ctp & hPa & CV variable & OE retrieval estimate of cloud top pressure \\
-    cloud top pressure uncertainty & ctp\_unc & hPa & CV variable & OE retrieval uncertainty of cloud top pressure \\
-    cloud effective radius & cer & mic & CV variable & OE retrieval estimate of cloud effective radius \\
-    cloud effective radius uncertainty & cer\_unc & mic & CV variable & OE retrieval uncertainty of cloud effective radius\\
-    cloud optical thickness & cot & 1 & CV variable & OE retrieval estimate of cloud optical thickness \\
-    cloud optical thickness uncertainty & cot\_unc & 1 & CV variable & OE retrieval uncertainty of cloud optical thickness \\
-    surface temperature & stemp & kelvin & CV variable & OE retrieval estimate of surface temperature \\
-    surface temperature uncertainty & stemp\_unc & kelvin & CV variable & OE retrieval uncertainty of surface temperature\\
+    cloud mask & cldmask & 1 & NN & Binary cloud occurrence classification \\
+    cloud type & cldtype & 1 & PV & Categorical cloud type classification \\
+    cloud phase & phflag & 1 & PV &  cloud phase classification \\
+    cloud top pressure & ctp & hPa & CV & OE retrieval estimate of cloud top pressure \\
+    cloud top pressure unc. & ctp\_unc & hPa & CV & OE retrieval unc. of cloud top pressure \\
+    cloud effective radius & cer & mic & CV & OE retrieval estimate of cloud effective radius \\
+    cloud effective radius unc. & cer\_unc & mic & CV & OE retrieval unc. of cloud effective radius\\
+    cloud optical thickness & cot & 1 & CV & OE retrieval estimate of cloud optical thickness \\
+    cloud optical thickness unc. & cot\_unc & 1 & CV & OE retrieval unc. of cloud optical thickness \\
+    surface temperature & stemp & kelvin & CV & OE retrieval estimate of surface temperature \\
+    surface temperature unc. & stemp\_unc & kelvin & CV & OE retrieval unc. of surface temperature\\
     \hline
     \multicolumn{5}{c}{secondary variables} \\
     \hline
-    cloud mask uncertainty & cldmask\_unc & 1 & pp & derived from NN output and threshold distance \\
-    cloud top height & cth & km & pp & derived from CTP through interpolation along atmospheric profile \\
-    cloud top height uncertainty & cth\_unc & km & pp & derived from retrieval uncertainty of CTP \\
-    cloud top temperature & ctt & kelvin & pp & derived from CTP through interpolation along atmospheric profile \\
-    cloud top temperature uncertainty & ctt\_unc & kelvin & pp & derived from retrieval uncertainty of CTP \\
-    cloud water path & cwp & g/m$^2$ & pp & derived from CER and COT based on Nakajima and King method \\
-    cloud water path uncertainty & cwp\_unc & g/m$^2$ & pp & derived from retrieval uncertainty of CER and COT \\
-    cloud albedo & cla & 1 & pp & derived from CER and COT based on ? \\
-    cloud albedo uncertainty & cla\_unc & 1 & pp & derived from retrieval uncertainty of CER and COT \\
-    cloud effective emissivity & cee & 1 & pp & derived from 10.8 and 12.0 mic ? \\
+    cloud mask unc. & cldmask\_unc & 1 & PP & derived from NN output and threshold distance \\
+    cloud top height & cth & km & PP & derived from CTP and atmospheric profile \\
+    cloud top height unc. & cth\_unc & km & PP & derived from retrieval unc. of CTP \\
+    cloud top temperature & ctt & kelvin & PP & derived from CTP and atmospheric profile \\
+    cloud top temperature unc. & ctt\_unc & kelvin & PP & derived from retrieval unc. of CTP \\
+    cloud water path & cwp & g/m$^2$ & PP & derived from CER and COT \citep{Nakajima90} \\
+    cloud water path unc. & cwp\_unc & g/m$^2$ & PP & derived from retrieval unc. of CER and COT \\
+    cloud albedo at 0.06 µm & cla & 1 & PP & derived from CER and COT based on ? \\
+    cloud albedo at 0.06 µm unc. & cla\_unc & 1 & PP & derived from retrieval unc. of CER and COT \\
+    cloud albedo at 0.08 µm & cla & 1 & PP & derived from CER and COT based on ? \\
+    cloud albedo at 0.08 µm unc. & cla\_unc & 1 & PP & derived from retrieval unc. of CER and COT \\
+    cloud effective emissivity & cee & 1 & PP & derived from 10.8 and 12.0 mic ? \\
     \hline
   \end{tabular}
   \label{tab:L2_variables}

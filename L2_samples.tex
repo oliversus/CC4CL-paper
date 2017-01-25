@@ -2,14 +2,7 @@
 
 \subsection{CC4CL cloud properties and uncertainties}
 
-Relative retrieval uncertainties are lowest for CTP and largest for COT (\cref{fig:uncertainties}). Median uncertainties in \% are CTP = \load{NA2_ctp_unc_median}4.7, COT = \load{NA2_cot_unc_median}55.0, CER = \load{NA2_cer_unc_median}13.6, and cloud mask = \load{NA2_cmask_unc_median}13.7. For CTP, \load{NA2_ctp_unc_lt10}90.0 \% of pixels have an uncertainty of $<$ 10 \%. COT uncertainties increase with COT, and a visual inspection of the RGB image (\cref{fig:RGB_07222058}) suggests that largest uncertainties are found in cases of opaque cloud coverage and probably cloud over sea-ice surfaces. CER results are similar to COT, although uncertainties are generally lower. Cloud free areas appear to show increased cloud mask uncertainties, and in particular over sea-ice surface areas. Note that the cloud mask uncertainties have been quantified as a function of the normalized difference to the cloud mask threshold, whereas for CTP, COT, and CER relative retrieval uncertainties (100 $\times$ uncertainty $\div$ retrieved value) are shown. 
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/07222058_uncertainties_percent_goodspacing.png}
-  \caption{Relative uncertainties [\%] of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
-  \label{fig:uncertainties}
-\end{figure*}
+Relative retrieval uncertainties are lowest for CTP and largest for COT (\cref{fig:uncertainties}). Median uncertainties in \% are CTP = \load{NA2_ctp_unc_median}26.7, COT = \load{NA2_cot_unc_median}6.1, CER = \load{NA2_cer_unc_median}2.0, and cloud mask = \load{NA2_cmask_unc_median}13.7. For CTP, \load{NA2_ctp_unc_lt10}10.0 \% of pixels have an uncertainty of $<$ 10 \%. COT uncertainties increase with COT, and a visual inspection of the RGB image (\cref{fig:RGB_07222058}) suggests that largest uncertainties are found in cases of opaque cloud coverage and probably cloud over sea-ice surfaces. CER results are similar to COT, although uncertainties are generally lower. Cloud free areas appear to show increased cloud mask uncertainties, and in particular over sea-ice surface areas. Note that the cloud mask uncertainties have been quantified as a function of the normalized difference to the cloud mask threshold, whereas for CTP, COT, and CER relative retrieval uncertainties (100 $\times$ uncertainty $\div$ retrieved value) are shown. 
 
 \subsection{CC4CL data intercomparison}
 
@@ -54,6 +47,13 @@ CTP data are approximately normally distributed (\cref{fig:histograms,tab:retrie
   \includegraphics[width=\textwidth]{figures/07222058_cer_multi.png}
   \caption{CER retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
   \label{fig:CER_intercomparison}
+\end{figure*}
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=0.68\textwidth]{figures/07222058_uncertainties_percent_goodspacing.png}
+  \caption{Relative uncertainties [\%] of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
+  \label{fig:uncertainties}
 \end{figure*}
 
 \begin{figure*}[h]
