@@ -1,0 +1,253 @@
+\documentclass[amt]{copernicus}
+
+\usepackage{hyperref}
+%\usepackage[capitalise,noabbrev]{cleveref}
+\usepackage[capitalise]{cleveref}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{array}
+\usepackage{color}
+
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcommand{\load}[1]{}
+
+\begin{document}
+
+% \chardef\_=`_
+\linenumbers
+
+\title{The Community Cloud retrieval for CLimate (CC4CL). Part I: A
+  framework applied to multiple satellite imaging sensors.}
+
+\author[1]{O. Sus}
+\author[1]{M. Jerg}
+\author[2]{C. Poulsen}
+\author[2]{G. Thomas}
+\author[1]{S. Stapelberg}
+\author[3]{G. Mcgarragh}
+\author[3]{A. Povey}
+\author[1]{C. Schlundt}
+\author[1]{M. Stengel}
+\author[1]{R. Hollmann}
+
+\affil[1]{DWD - Deutscher Wetterdienst, Frankfurter Straße 135, 63067 Offenbach, Germany}
+\affil[2]{RAL Space - Rutherford Appleton Laboratory, Chilton, Didcot, OX11 0QX, UK}
+\affil[3]{University of Oxford}
+
+\runningtitle{CC4CL}
+
+\runningauthor{O. Sus et al.}
+
+\correspondence{O. Sus\\ oliver.sus@dwd.de}
+
+\received{}
+\pubdiscuss{} %% only important for two-stage journals
+\revised{}
+\accepted{}
+\published{}
+
+\firstpage{1}
+
+\maketitle
+% \sloppy
+
+\begin{abstract}
+  Hello abstract.
+\end{abstract}
+
+\input{introduction.tex}
+
+\input{input_data.tex}
+
+\input{processing_chain.tex}
+
+\input{L2_samples.tex}
+
+\input{discussion_conclusions.tex}
+
+\input{acknowledgements.tex}
+
+\appendix
+
+\section{ERA-Interim input fields}
+\begin{table}[ht]
+  \caption{ERA-Interim variables used within CC4CL. Variables marked with * are available at 0.1\textdegree spatial resolution, all others default to 0.72\textdegree.}
+  \begin{tabular}{p{3.8cm}|l|r|p{1.5cm}}
+    \hline
+    variable name & abbrev. & ID & unit \\
+    \hline
+    \multicolumn{4}{c}{profile variables} \\
+    \hline
+    Geopotential & Z & 129 & m$^2$ s$^{-2}$ \\
+    Temperature  & T & 130 & K \\
+    Specific humidity & Q & 133 & kg kg$^{-1}$ \\
+    Log. surface pressure & LNSP & 152 & Pa \\
+    Ozone mass mixing ratio & O3 & 203 & kg kg$^{-1}$ \\
+    \hline
+    \multicolumn{4}{c}{surface and single level variables} \\
+    \hline
+    Sea-ice cover* & CI & 31 & (0-1) \\
+    Snow albedo & ASN & 32 & (0-1) \\
+    Sea surface temperature & SSTK & 34 & K \\
+    Total column water vapour & TCWV & 137 & kg m$^{-2}$ \\
+    Snow depth* & SD & 141 & m of water equivalent \\
+    10 metre U wind component & U10M & 165 & m s$^{-1}$ \\
+    10 metre U wind component & V10M & 166 & m s$^{-1}$ \\
+    2 metre temperature & T2M & 167 & K \\
+    Land/sea mask & LSM & 172 & (0,1) \\
+    Skin temperature* & SKT & 235 & K \\
+    \hline
+  \end{tabular}
+  \label{tab:ERA-Interim}
+\end{table}
+
+\section{Full list of variables in CC4CL Level-2 files}    %% Appendix
+\begin{table}[ht]
+  \caption{CC4CL L2 output variables. NN = neural network.}
+  \begin{tabular}{l|l|l}
+    \hline
+    variable name & abbrev. & unit \\
+    \hline
+    \multicolumn{3}{c}{primary variables} \\
+    \hline
+    latitude & lat & degree \\
+    longitude & lon & degree \\
+    solar zenith & solzen & degree \\
+    satellite zenith & satzen & degree \\
+    relative azimuth & relaz & degree \\
+    cloud top pressure & ctp & hPa \\
+    cloud top height & cth & kilometer \\
+    cloud top temperature & ctt & kelvin \\
+    cloud liquid water path & cwp & g/m$^2$ \\
+    cloud effective radius & cer & micrometer \\
+    cloud optical thickness & cot & 1 \\
+    NN cloud optical thickness & cccot & 1 \\
+    cloud albedo & cla & 1 \\
+    cloud effective emissivity & cee & 1 \\
+    cloud fraction & cc\textunderscore total & 1 \\
+    NN cloud mask & cldmask & 1 \\
+    cloud phase flag & phflag & 1 \\
+    Pavolonis cloud type & cldtype & 1 \\
+    retrieval convergence flag & conv &  1 \\
+    number of retrieval iterations & niter & 1 \\
+    a priori cost at solution & costja & 1 \\
+    measurement cost at solution & costjm & 1 \\
+    quality control flag & qcflag & 1 \\
+    land/sea flag & lsflag & 1 \\
+    snow/ice mask & siflag & 1 \\
+    illumination flag & ilflag & 1 \\
+    surface temperature & stemp & kelvin \\
+    \hline
+    \multicolumn{3}{c}{secondary variables} \\
+    \hline
+    cloud optical thickness a priori & cot\textunderscore ap & 1 \\
+    \hline
+  \end{tabular}
+  \label{tab:L2_variables_appendix}
+\end{table}
+
+\subsection{}                               %% Appendix A1, A2, etc.
+
+
+\bibliographystyle{copernicus}
+\bibliography{CC4CL}
+
+%% Literature citations
+%% command                        & example result
+%% \citet{jones90}|               & Jones et al.\ (1990)
+%% \citep{jones90}|               & (Jones et al., 1990)
+%% \citep{jones90,jones93}|       & (Jones et al., 1990, 1993)
+%% \citep[p.~32]{jones90}|        & (Jones et al., 1990, p.~32)
+%% \citep[e.g.,][]{jones90}|      & (e.g., Jones et al., 1990)
+%% \citep[e.g.,][p.~32]{jones90}| & (e.g., Jones et al., 1990, p.~32)
+%% \citeauthor{jones90}|          & Jones et al.
+%% \citeyear{jones90}|            & 1990
+
+
+
+
+
+
+%% FIGURES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% ONE-COLUMN FIGURES
+
+%f
+% \begin{figure}[t]
+% \vspace*{2mm}
+% \begin{center}
+% %\includegraphics[width=8.3cm]{FILE NAME}
+% \end{center}
+% \caption{TEXT}
+% \end{figure}
+
+
+
+% %% TWO-COLUMN FIGURES
+
+% %f
+% \begin{figure*}[t]
+% \vspace*{2mm}
+% \begin{center}
+% %\includegraphics[width=12cm]{FILE NAME}
+% \end{center}
+% \caption{TEXT}
+% \end{figure*}
+
+
+% %% TABLES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% %% ONE-COLUMN TABLE
+
+% %t
+% \begin{table}[t]
+% \caption{TEXT}
+% \vskip4mm
+% \centering
+% %\begin{tabular}{column = lcr}
+% \begin{tabular}{lcr}
+% \tophline
+
+% \middlehline
+
+% \bottomhline
+% \end{tabular}
+% \end{table}
+
+
+% %% TWO-COLUMN TABLE
+
+% %t
+% \begin{table*}[t]
+% \caption{TEXT}
+% \vskip4mm
+% \centering
+% %\begin{tabular}{column = lcr}
+% \begin{tabular}{lcr}
+% \tophline
+
+% \middlehline
+
+% \bottomhline
+% \end{tabular}
+% \end{table*}
+
+
+% %% The different columns must be seperated with a & command and should
+% %% end with \\ to identify the column brake.
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% %% If figures and tables must be numbered 1a, 1b, etc. the following command
+% %% should be inserted before the begin{} command.
+
+% \addtocounter{figure}{-1}\renewcommand{\thefigure}{\arabic{figure}a}
+
+
+\end{document}
