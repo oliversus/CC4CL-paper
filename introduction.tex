@@ -44,7 +44,7 @@
 
 %   clouds in the climate system 
 Satellite data are an essential source of information in order to
-better understand and predict climate change. Satellites provide global long-term
+better understand and predict climate change. They provide global long-term
 observations from which geophysical parameters can be derived. These data are used for
 time-series analysis of climate variables, and also for the assimilation into
 or validation of climate models \citep{Comiso14,Yang13}. A paramount goal of
@@ -117,7 +117,7 @@ input satellite radiances. One key novel feature is the production of uncertaint
 estimates of retrieval parameters through explict error propagation from input to output data. With these criteria in mind, the Oxford and Rutherford Aerosol and
 Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} was chosen out of three competing algorithms within a ``Round Robin'' selection process. 
 
-In this study, we will present the key features of the CC4CL processing algorithm. We will particularly focus on discussing the novel features of the framework, which set it apart from other approaches: the optimal estimation approach in general, the explicit uncertainty quantification through rigorous propagation of all known error sources to the final product, and the consistency of our long-term, multi-platform timeseries provided on various resolutions, from 0.5\textdegree\ up to 0.02\textdegree. Through describing all key input data and processing steps, the future user will be informed about remaining deficiencies of this new dataset, and its potential applicability in climate studies. We will provide an overview of the retrieved and derived output variables. These will further be initially validated for a set of representative L2 output data scenes within a selected region against other retrieval algorithms and independent observations. 
+In this study, we present the key features of the CC4CL processing algorithm. We particularly focus on discussing the novel features of the framework, which set it apart from other approaches: the optimal estimation approach in general, the explicit uncertainty quantification through rigorous propagation of all known error sources to the final product, and the consistency of our long-term, multi-platform timeseries provided on various resolutions, from 0.5\textdegree\ up to 0.02\textdegree. Through describing all key input data and processing steps, we inform the future user about all relevant features of this new dataset, and its potential applicability in climate studies. We provide an overview of the retrieved and derived output variables. These are initially validated in a comprehensive and detailed analysis of retrieval results that we collocated with Calipso observations for three scenes in the Arctic and one scene in the Gulf of Guinea/West Africa. The results show that CC4CL provides very realistic estimates of cloud top height and cover for optically thick clouds, but produces mixed-layer estimates for cases where optically thin clouds overlap. % for a set of representative L2 output data scenes within a selected region against other retrieval algorithms and independent observations. 
 
 % Key questions, hypotheses, analyses:
 
@@ -137,4 +137,11 @@ In this study, we will present the key features of the CC4CL processing algorith
 % \item analyse residuals between CALIPSO and Cloud\textunderscore cci variables, possibly also as a function of CTP or COT
 % \end{itemize}
 
+
+% PPS und CLARA
+% Round Robin paper: tabellarische Auflistung der Unterscheide zwischen ORAC und anderen.
+% MODIS C6?
+% generell: welche retrieval gibt es, und was sind die Hauptunterschiede? Bayesian, decision trees, ...
+% Stärken und Schwächen von Retrievalverfahren, Vergleichsstudien
+% Unüberwindbare Schwächen: keine vertikale Struktur, Integral von LWP/IWP wird eigentlich nicht gesehen
 

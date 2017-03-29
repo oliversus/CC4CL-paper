@@ -2,25 +2,17 @@
 
 \subsection{Heritage}
 
-% Round robin (to 3)
-In order to investigate different algorithms for their potential usage and
-applicability in light of the aforementioned criteria, a rigorous and
-comprehensive comparison effort was carried out at the onset of the
-project.
-Taking part in this investigation, termed ``Round Robin Exercise'',
-were three different algorithms. The operational processing system of the
-\citet{CMSAF_web}, the CLAVR-X algorithm used to generate the PATMOS-x
-climatology \citep{Heidinger13}, and the Oxford and Rutherford Aerosol and
-Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} which was previously used
-to produce the GRAPE climatology \citep{Thomas09_GRAPE, GRAPE_web}.
-Details of the assessment and the results can be found in
-\citet{Stengel15}. All three algorithms were then driven with identical MODIS
-and AVHRR input data and Era-Interim meteorological background information
-from five days during the year 2008 and the results where analyzed with
-respect to CLOUDSAT, Calipso and AMSR-E reference data.
-This study not only led to a number of recommendations for further retrieval
-development but also unveiled that there was no clear winner outperforming the
-other algorithms.
+In the early stages of the Cloud\textunderscore cci project, a comprehensive ``Round Robin Exercise'' evaluated
+three different algorithms regarding their applicability for retrieving cloud parameters from satellite data
+\citep{Stengel15}, which were 1) the operational processing system of the \citet{CMSAF_web}, 2) the CLAVR-X algorithm
+used to generate the PATMOS-x climatology \citep{Heidinger13}, and 3) the Oxford and Rutherford Aerosol and
+Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} which was previously used to produce the GRAPE climatology
+\citep{Thomas09_GRAPE, GRAPE_web}. All three algorithms were driven with identical MODIS and AVHRR input data
+and Era-Interim meteorological background information for five days in 2008. The results where analyzed with
+respect to CLOUDSAT, Calipso and AMSR-E reference data. 
+
+Based on the outcomes of that study, ORAC was selected to be the cloud retrieval scheme within CC4CL. Moreover,
+code modifications were identified and characterized to render ORAC fit for purpose. 
 
 \subsection{Preprocessing}
 
@@ -31,19 +23,39 @@ other algorithms.
   \label{fig:CC4CL_preprocessor}
 \end{figure}
 
-The CC4CL preprocessor initially defines the dimensions and content of the sensor, surface, and preprocessing grids (\autoref{fig:CC4CL_preprocessor}).
+The CC4CL preprocessor initially defines the dimensions and content of the sensor, surface, and preprocessing
+grids (\autoref{fig:CC4CL_preprocessor}). 
 
-The sensor and surface grids have the same extent and resolution as the input orbit or granule. The sensor grid is filled with sensor radiances and angles (section \ref{sec:L1_data}), whereas data on surface BRDF (section \ref{sec:BRDF}), snow/ice coverage (from ERA-Interim, section \ref{sec:ERA-Interim}), and surface emissivity (section \ref{sec:emissivity}) are bilinearly interpolated onto the surface grid. We use BRDF data over land only. For sea pixels, the Cox/Munk ocean surface reflectance model calculates BRDF coefficients as a function of ERA-Interim wind speed. The albedo of snow/ice covered pixels is set to globally constant values of 0.958 (Ch1), 0.868 (Ch2), 0.0364 (Ch3), and 0.0 (Ch4), and is area weighted in case of fractional sea/ice cover.
+The sensor and surface grids have the same extent and resolution as the input orbit or granule. The sensor
+grid is filled with sensor radiances and angles (section \ref{sec:L1_data}), whereas data on surface BRDF
+(section \ref{sec:BRDF}), snow/ice coverage (from ERA-Interim, section \ref{sec:ERA-Interim}), and surface
+emissivity (section \ref{sec:emissivity}) are bilinearly interpolated onto the surface grid. We use BRDF data
+over land only. For sea pixels, the Cox/Munk ocean surface reflectance model calculates BRDF coefficients as a
+function of ERA-Interim wind speed. The albedo of snow/ice covered pixels is set to globally constant values
+of 0.958 (Ch1), 0.868 (Ch2), 0.0364 (Ch3), and 0.0 (Ch4), and is area weighted in case of fractional sea/ice
+cover.
 
-The preprocessing grid is a regular latitude/longitude grid that covers the extent of the sensor grid, but is defined at a coarser resolution of 0.72\textdegree $\times$ 0.72\textdegree. The preprocessor calculates geolocation values for each grid box, and fills it with data: the average of all sensor angle and surface emissivity values falling into a grid box, and spatially interpolated (nearest neighbour) USGS data (section \ref{sec:USGS}). ERA-Interim variables are defined as surface and profile variables, and were transformed before input to the preprocessing grid as described in section \ref{sec:ERA-Interim}. For profile variables, vertical geopotential coordinates are calculated from pressure coordinates.
+The preprocessing grid is a regular latitude/longitude grid that covers the extent of the sensor grid, but is
+defined at a coarser resolution of 0.72\textdegree $\times$ 0.72\textdegree. The preprocessor calculates
+geolocation values for each grid box, and fills it with data: the average of all sensor angle and surface
+emissivity values falling into a grid box, and spatially interpolated (nearest neighbour) USGS data (section
+\ref{sec:USGS}). ERA-Interim variables are defined as surface and profile variables, and were transformed
+before input to the preprocessing grid as described in section \ref{sec:ERA-Interim}. For profile variables,
+vertical geopotential coordinates are calculated from pressure coordinates.
 
-The preprocessor then calls the cloud mask (section \ref{sec:CloudMask}) and the cloud typing (section \ref{sec:Pavolonis}) algorithms, and writes output data to the surface grid. Finally, RTTOV is executed on the preprocessing grid data as defined by ERA-Interim surface and profile variables. RTTOV outputs above and below cloud transmission for shortwave channels, and radiances (above cloud up- and downwelling, below cloud upwelling), transmission (above and below cloud), and emissivity for longwave channels.
+The preprocessor then calls the cloud mask (section \ref{sec:CloudMask}) and cloud typing (section
+\ref{sec:Pavolonis}) algorithms, and writes output data to the surface grid. Finally, RTTOV is executed on the
+preprocessing grid data as defined by ERA-Interim surface and profile variables. RTTOV outputs above and below
+cloud transmission for shortwave channels, and radiances (above cloud up- and downwelling, below cloud
+upwelling), transmission (above and below cloud), and emissivity for longwave channels.
 
-All data are written to NetCDF files as subsequent input to the main processor ORAC. As we determine the cloud mask and phase in the preprocessor, ORAC can optionally be run only on cloudy pixels and one phase to reduce processing time.
+All data are written to NetCDF files as subsequent input to the main processor ORAC. As we determine the cloud
+mask and phase in the preprocessor, ORAC can optionally be run only on cloudy pixels and one phase to reduce
+processing time.
 
 \subsection{CC4CL cloud retrieval}
 
-\subsubsection{Cloud masking}\label{sec:CloudMask}
+\subsubsection{Cloud detection}\label{sec:CloudMask}
 
 CC4CL applies a set of artificial neural networks (ANN) for cloud masking, one for each of the illumination conditions day, night, and twilight. The ANNs are multilayer perceptrons with one input layer, one hidden layer with 50 neurons, and one output layer, which produces pseudo CALIOP cloud optical depth (ANNCOD) ranging from 0 to 1.
 
@@ -97,7 +109,7 @@ The binary cloud mask is finally estimated by classification of ANNCOD data into
   \label{tab:ANN_coefficients}
 \end{table}
 
-We estimate cloud mask uncertainty based on the assumption that this uncertainty is inversely proportional to the difference between retrieved ANNCOD and the threshold applied. As a first step, we quantified a ``truth'' uncertainty or, rather, error. To do so, we generated a CALIOP cloud mask by application of a clear/cloudy threshold value of 0.05. The CALIOP cloud mask is then compared with the collocated ANN mask by quantification of a Percent Correct (PEC) score. PEC is basically the ratio between all correctly classified pixels and the number of all pixels analysed. Finally, the ``truth'' uncertainty is defined as 100 $-$ PEC \%. We then established the statistical relationship between this uncertainty and the ANNCOD difference to its threshold. Before application of the approach, we normalised differences (ND) to 1. We found a linear correlation between uncertainty and ND for clear cases, and a second order polynomial correlation for cloudy cases (\autoref{fig:NN_unc}):
+We estimate cloud mask uncertainty based on the assumption that this uncertainty is inversely proportional to the difference between retrieved ANNCOD and the threshold applied. As a first step, we quantified a ``truth'' uncertainty or, rather, error. To do so, we generated a CALIOP cloud mask by application of a clear/cloudy threshold value of 0.05. The CALIOP cloud mask is then compared with the collocated ANN mask by quantification of a Percent Correct (PEC) score. PEC quantifies the ratio between all correctly classified pixels and the number of all pixels analysed. Finally, the ``truth'' uncertainty is defined as 100 $-$ PEC \%. We then established the statistical relationship between this uncertainty and the ANNCOD difference to its threshold. Before application of the approach, we normalised differences (ND) to 1. We found a linear correlation between uncertainty and ND for clear cases, and a second order polynomial correlation for cloudy cases (\autoref{fig:NN_unc}):
 
 clear:
 \begin{equation}
@@ -122,7 +134,7 @@ The equations of these regression fits are used within CC4CL to quantify cloud m
 
 Cloud phase is determined by application of the Pavolonis cloud typing algorithm \citep{Pavolonis05}. The Pavolonis algorithm outputs 6 cloud types (\cref{tab:cloud_types}), which we then reclassified into water or ice clouds: liquid = fog/warm liquid/supercooled, ice = opaque ice/cirrus/overlap. For CC4CL, the fog type test was deactivated. The algorithm always uses the 0.65-, 11-, and 12-$\mu m$ channel data. It is further designed to read 3.75$\mu m$ data whenever available, and otherwise switches to a 1.65$\mu m$ mode. These two different approaches produce nearly identical results, exept for certain thin clouds and cloud edges \citep{Pavolonis05}. In addition, we introduced two new cloud types within CC4CL. We decided to change phase for ice clouds whose retrieval CTT is to high (new cloud type = SWITCHED\textunderscore TO\textunderscore WATER if CTT $>$ 273.16 K, the freezing point of water), and for water clouds whose CTT is too low (SWITCHED\textunderscore TO\textunderscore ICE if CTT $<$ 233.16 K, the lower limit of supercooled water).
 
-The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitudes, which are often misclassified as opaque ice clouds. Performance is considerably better when the also available VIIRS algorithm is used, which provides additional channels and threshold tests. However, these cannot be applied to our AVHRR heritage dataset \citep{Pavolonis05}.
+The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitudes, which are often misclassified as opaque ice clouds. Performance is considerably better when the VIIRS algorithm is used, which provides additional channels and threshold tests. However, these cannot be applied to our AVHRR heritage dataset \citep{Pavolonis05}.
 
 \begin{table}[h]
   \caption{Cloud type classification for CC4CL and Calipso.}
