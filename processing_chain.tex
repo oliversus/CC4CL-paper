@@ -2,17 +2,9 @@
 
 \subsection{Heritage}
 
-In the early stages of the Cloud\textunderscore cci project, a comprehensive ``Round Robin Exercise'' evaluated
-three different algorithms regarding their applicability for retrieving cloud parameters from satellite data
-\citep{Stengel15}, which were 1) the operational processing system of the \citet{CMSAF_web}, 2) the CLAVR-X algorithm
-used to generate the PATMOS-x climatology \citep{Heidinger13}, and 3) the Oxford and Rutherford Aerosol and
-Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} which was previously used to produce the GRAPE climatology
-\citep{Thomas09_GRAPE, GRAPE_web}. All three algorithms were driven with identical MODIS and AVHRR input data
-and Era-Interim meteorological background information for five days in 2008. The results where analyzed with
-respect to CLOUDSAT, Calipso and AMSR-E reference data. 
+In the early stages of the Cloud\textunderscore cci project, a comprehensive ``Round Robin Exercise'' evaluated three different algorithms regarding their applicability for retrieving cloud parameters from satellite data \citep{Stengel15}, which were 1) the operational processing system of the \citet{CMSAF_web}, 2) the CLAVR-X algorithm used to generate the PATMOS-x climatology \citep{Heidinger13}, and 3) the Oxford and Rutherford Aerosol and Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} which was previously used to produce the GRAPE climatology \citep{Thomas09_GRAPE, GRAPE_web}. All three algorithms were driven with identical MODIS and AVHRR input data and Era-Interim meteorological background information for five days in 2008. The results where analysed with respect to CLOUDSAT, Calipso and AMSR-E reference data. 
 
-Based on the outcomes of that study, ORAC was selected to be the cloud retrieval scheme within CC4CL. Moreover,
-code modifications were identified and characterized to render ORAC fit for purpose. 
+Based on the outcomes of that study, ORAC was selected to be the cloud retrieval scheme within CC4CL. Moreover, code modifications were identified and characterized to render ORAC fit for purpose. 
 
 \subsection{Preprocessing}
 
@@ -23,35 +15,15 @@ code modifications were identified and characterized to render ORAC fit for purp
   \label{fig:CC4CL_preprocessor}
 \end{figure}
 
-The CC4CL preprocessor initially defines the dimensions and content of the sensor, surface, and preprocessing
-grids (\autoref{fig:CC4CL_preprocessor}). 
+The CC4CL preprocessor initially defines the dimensions and content of the sensor, surface, and preprocessing grids (\autoref{fig:CC4CL_preprocessor}). 
 
-The sensor and surface grids have the same extent and resolution as the input orbit or granule. The sensor
-grid is filled with sensor radiances and angles (section \ref{sec:L1_data}), whereas data on surface BRDF
-(section \ref{sec:BRDF}), snow/ice coverage (from ERA-Interim, section \ref{sec:ERA-Interim}), and surface
-emissivity (section \ref{sec:emissivity}) are bilinearly interpolated onto the surface grid. We use BRDF data
-over land only. For sea pixels, the Cox/Munk ocean surface reflectance model calculates BRDF coefficients as a
-function of ERA-Interim wind speed. The albedo of snow/ice covered pixels is set to globally constant values
-of 0.958 (Ch1), 0.868 (Ch2), 0.0364 (Ch3), and 0.0 (Ch4), and is area weighted in case of fractional sea/ice
-cover.
+The sensor and surface grids have the same extent and resolution as the input orbit or granule. The sensor grid is filled with sensor radiances and angles (section \ref{sec:L1_data}), whereas data on surface BRDF (section \ref{sec:BRDF}), snow/ice coverage (from ERA-Interim, section \ref{sec:ERA-Interim}), and surface emissivity (section \ref{sec:emissivity}) are bilinearly interpolated onto the surface grid. We use BRDF data over land only. For sea pixels, the Cox/Munk ocean surface reflectance model calculates BRDF coefficients as a function of ERA-Interim wind speed. The albedo of snow/ice covered pixels is set to globally constant values of 0.958 (Ch1), 0.868 (Ch2), 0.0364 (Ch3), and 0.0 (Ch4), and is area weighted in case of fractional sea/ice cover.
 
-The preprocessing grid is a regular latitude/longitude grid that covers the extent of the sensor grid, but is
-defined at a coarser resolution of 0.72\textdegree $\times$ 0.72\textdegree. The preprocessor calculates
-geolocation values for each grid box, and fills it with data: the average of all sensor angle and surface
-emissivity values falling into a grid box, and spatially interpolated (nearest neighbour) USGS data (section
-\ref{sec:USGS}). ERA-Interim variables are defined as surface and profile variables, and were transformed
-before input to the preprocessing grid as described in section \ref{sec:ERA-Interim}. For profile variables,
-vertical geopotential coordinates are calculated from pressure coordinates.
+The preprocessing grid is a regular latitude/longitude grid that covers the extent of the sensor grid, but is defined at a coarser resolution of 0.72\textdegree $\times$ 0.72\textdegree. The preprocessor calculates geolocation values for each grid box, and fills it with data: the average of all sensor angle and surface emissivity values falling into a grid box, and spatially interpolated (nearest neighbour) USGS data (section \ref{sec:USGS}). ERA-Interim variables are defined as surface and profile variables, and were transformed before input to the preprocessing grid as described in section \ref{sec:ERA-Interim}. For profile variables, vertical geopotential coordinates are calculated from pressure coordinates.
 
-The preprocessor then calls the cloud mask (section \ref{sec:CloudMask}) and cloud typing (section
-\ref{sec:Pavolonis}) algorithms, and writes output data to the surface grid. Finally, RTTOV is executed on the
-preprocessing grid data as defined by ERA-Interim surface and profile variables. RTTOV outputs above and below
-cloud transmission for shortwave channels, and radiances (above cloud up- and downwelling, below cloud
-upwelling), transmission (above and below cloud), and emissivity for longwave channels.
+The preprocessor then calls the cloud mask (section \ref{sec:CloudMask}) and cloud typing (section \ref{sec:Pavolonis}) algorithms, and writes output data to the surface grid. Finally, RTTOV is executed on the preprocessing grid data as defined by ERA-Interim surface and profile variables. RTTOV outputs above and below cloud transmission for shortwave channels, and radiances (above cloud up- and downwelling, below cloud upwelling), transmission (above and below cloud), and emissivity for longwave channels.
 
-All data are written to NetCDF files as subsequent input to the main processor ORAC. As we determine the cloud
-mask and phase in the preprocessor, ORAC can optionally be run only on cloudy pixels and one phase to reduce
-processing time.
+All data are written to NetCDF files as subsequent input to the main processor ORAC. As we determine the cloud mask and phase in the preprocessor, ORAC can optionally be run only on cloudy pixels and one phase to reduce processing time.
 
 \subsection{CC4CL cloud retrieval}
 
@@ -84,7 +56,7 @@ CC4CL applies a set of artificial neural networks (ANN) for cloud masking, one f
   \label{tab:ANN_thresholds}
 \end{table}
 
-The various ANNs were trained with NOAA-18 AVHRR L1c data, auxiliary information, and cloud optical depth (COD) ``truth'' data obtained from the CALIPSO satellite's LIDAR called CALIOP at 532 nm (\mbox{CAL\textunderscore LID\textunderscore L2\textunderscore 05kmCLay-Prov-V3-01}). AVHRR Ch3a data were generally excluded. We trained the day ANN with all remaining AVHRR channels, but also excluded Ch3b to be consistent with those NOAA platforms that switch between Ch3b transmission at night and Ch3a at day (NOAA-16, NOAA-17, MetopA). For night and twilight conditions, we produced ANNs both with and without Ch3b data input. This was necessary to avoid misclassification of very cold clouds and/or land surfaces due to Ch3b's very low signal-to-noise ratio. Next to the round robin days (?), we selected 12 additional representative training days in 2008 that satisfy basic requirements in terms of collocation between NOAA-18 and CALIPSO, representation of cloud optical depth seasonality, and global coverage. Prior to training, CALIPSO COD values were set to be $\le$ 1. Auxiliary data input are the ERA-Interim skin temperature, a snow/ice mask derived from ERA-Interim snow depth and sea ice concentration, and the USGS land/sea mask. Finally, we applied a simple correction algorithm to remove a viewing-angle dependency of retrieved ANNCOD.
+The various ANNs were trained with NOAA-18 AVHRR L1c data, auxiliary information, and cloud optical depth (COD) ``truth'' data obtained from the CALIPSO satellite's LIDAR called CALIOP at 532 nm (\mbox{CAL\textunderscore LID\textunderscore L2\textunderscore 05kmCLay-Prov-V3-01}). AVHRR Ch3a data were generally excluded. We trained the day ANN with all remaining AVHRR channels, but also excluded Ch3b to be consistent with those NOAA platforms that switch between Ch3b transmission at night and Ch3a at day (NOAA-16, NOAA-17, MetopA). For night and twilight conditions, we produced ANNs both with and without Ch3b data input. This was necessary to avoid misclassification of very cold clouds and/or land surfaces due to Ch3b's very low signal-to-noise ratio. Including the round robin days (?), we selected 12 additional representative training days in 2008 that satisfy basic requirements in terms of collocation between NOAA-18 and CALIPSO, representation of cloud optical depth seasonality, and global coverage. Prior to training, CALIPSO COD values were set to be $\le$ 1. Auxiliary data input are the ERA-Interim skin temperature, a snow/ice mask derived from ERA-Interim snow depth and sea ice concentration, and the USGS land/sea mask. Finally, we applied a simple correction algorithm to remove a viewing-angle dependency of retrieved ANNCOD.
 
 The binary cloud mask is finally estimated by classification of ANNCOD data into clear and cloudy through a set of threshold values. The thresholds themselves vary depending on illumination and surface conditions, namely land, sea, and snow/ice cover (\autoref{tab:ANN_thresholds}). As the ANN was trained with AVHRR data only, differences in spectral response functions need to be considered before the ANN can be applied to MODIS and AATSR. We derived appropriate coefficients through linear regression analysis between collocated satellite observations for each input channel pair (\autoref{tab:ANN_coefficients}). The resulting coefficients were applied to MODIS and AATSR satellite data before ANN input.
 
@@ -132,7 +104,7 @@ The equations of these regression fits are used within CC4CL to quantify cloud m
 
 \subsubsection{Cloud typing}\label{sec:Pavolonis}
 
-Cloud phase is determined by application of the Pavolonis cloud typing algorithm \citep{Pavolonis05}. The Pavolonis algorithm outputs 6 cloud types (\cref{tab:cloud_types}), which we then reclassified into water or ice clouds: liquid = fog/warm liquid/supercooled, ice = opaque ice/cirrus/overlap. For CC4CL, the fog type test was deactivated. The algorithm always uses the 0.65-, 11-, and 12-$\mu m$ channel data. It is further designed to read 3.75$\mu m$ data whenever available, and otherwise switches to a 1.65$\mu m$ mode. These two different approaches produce nearly identical results, exept for certain thin clouds and cloud edges \citep{Pavolonis05}. In addition, we introduced two new cloud types within CC4CL. We decided to change phase for ice clouds whose retrieval CTT is to high (new cloud type = SWITCHED\textunderscore TO\textunderscore WATER if CTT $>$ 273.16 K, the freezing point of water), and for water clouds whose CTT is too low (SWITCHED\textunderscore TO\textunderscore ICE if CTT $<$ 233.16 K, the lower limit of supercooled water).
+Cloud phase is determined by application of the Pavolonis cloud typing algorithm \citep{Pavolonis05}. The Pavolonis algorithm outputs 6 cloud types (\cref{tab:cloud_types}), which we then reclassified into water or ice clouds: liquid = fog/warm liquid/supercooled, ice = opaque ice/cirrus/overlap. For CC4CL, the fog type test was deactivated. The algorithm always uses the 0.65-, 11-, and 12-$\mu m$ channel data. It is further designed to read 3.75$\mu m$ data whenever available, and otherwise switches to a 1.65$\mu m$ mode. These two different approaches produce nearly identical results, except for certain thin clouds and cloud edges \citep{Pavolonis05}. In addition, we introduced two new cloud types within CC4CL. We decided to change phase for ice clouds whose retrieval CTT is to high (new cloud type = SWITCHED\textunderscore TO\textunderscore WATER if CTT $>$ 273.16 K, the freezing point of water), and for water clouds whose CTT is too low (SWITCHED\textunderscore TO\textunderscore ICE if CTT $<$ 233.16 K, the lower limit of supercooled water).
 
 The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitudes, which are often misclassified as opaque ice clouds. Performance is considerably better when the VIIRS algorithm is used, which provides additional channels and threshold tests. However, these cannot be applied to our AVHRR heritage dataset \citep{Pavolonis05}.
 
@@ -157,10 +129,13 @@ The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitu
   \end{tabular}
   \label{tab:cloud_types}
 \end{table}
+
 \subsubsection{Optimal estimation retrieval of COT, CER and CTP}
-The optimal estimation retrieval, the Oxford RAL Aerosol and Cloud (ORAC) algorithm, is conceptually based on an inverse problem. The forward model simulates top of atmosphere satellite radiance as a function of atmospheric state and a cloud model. Then, an inverse model attempts to find the optimal fit between the simulated and observed TOA radiances by incrementally varying the parameters of the cloud model. Simulations and measurements are weighted according to measurement errors and uncertainties regarding prior knowledge and the forward model. The important benefits of ORAC are that cloud parameters are retrieved using information in all satellite channels simultaneously, so that the retrieved parameters provide a robust representation of the short-wave and long-wave radiance effects of the observed cloud. Moreover, the algorithm quantifies retrieval uncertainty, which is as a measure of the consistency between the retrieved cloud parameters and the satellite measurments \citep{Poulsen12}. For a more detailed description of the ORAC algorithm see part II of this publication (add citation).
+
+The optimal estimation retrieval, the Oxford RAL Aerosol and Cloud (ORAC) algorithm, is conceptually based on an inverse problem. The forward model simulates top of atmosphere satellite radiance as a function of atmospheric state and a cloud model. Then, an inverse model attempts to find the optimal fit between the simulated and observed TOA radiances by incrementally varying the parameters of the cloud model. Simulations and measurements are weighted according to measurement errors and uncertainties regarding prior knowledge and the forward model. The important benefits of ORAC are that cloud parameters are retrieved using information in all satellite channels simultaneously, so that the retrieved parameters provide a robust representation of the short-wave and long-wave radiance effects of the observed cloud. Moreover, the algorithm quantifies retrieval uncertainty, which is as a measure of the consistency between the retrieved cloud parameters and the satellite measurements \citep{Poulsen12}. For a more detailed description of the ORAC algorithm see part II of this publication (add citation).
 
 \subsection{Post-processing}
+
 For each input pixel, the main processor produces retrieval values for both ice and liquid clouds. The postprocessor will then select the appropriate output variables according to the Pavolonis cloud phase. As described in section \ref{sec:Pavolonis}, the postprocessor changes cloud phase in case retrieved CTT does not match the Pavolonis phase. Finally, output variables are written to primary and secondary NetCDF files.
 
 \begin{table*}[h]

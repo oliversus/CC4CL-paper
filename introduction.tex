@@ -1,149 +1,17 @@
-% ---------------------------------------------------------------------------
-% outline
-% 1) situation
-%    - clouds in the climate system
-%    - existing cloud property retrievals
-%    - motivation of the Cloud CCI project
-% 2) complication
-%    - cloud remote sensing problems:
-%      - overlap
-%      - spatial extent vs. sensor resolution
-%      - night-time vs day-time retrievals
-%      - clouds over bright surfaces
-%    - satellite data limitations:
-%      - temporal coverage: AVHRR
-%      - spatial resolution: MODIS, AATSR
-%      - spectral resolution: MODIS, AATSR
-%      - sounders (HIRS) and lidar (CALIOP on CALIPSO) vs imagers 
-%      --> need to merge best of both worlds whilst accounting for
-%          (inter-)calibration issues, orbital drift, changes in spectral resolution
-%    - retrieval shortcomings
-%      - availability of temporally consistent auxiliary datasets (e.g. BRDF,
-%        atmospheric state, snow + sea-ice coverage)
-%      - thresholding: simple, but no explicit radiative consistency between
-%        observed radiances and retrieved cloud properties; not flexibly applicable
-%        to new channels and/or sensors, no uncertainty quantification
-%      - optimal estimation: complicated but sophisticated, accounting for
-%        radiative consistency; however, local minimum problem; input background
-%        uncertainties difficult to quantify; several OE-related assumptions
-%        satisfied?
-% 3) the CC4CL framework + key questions
-%    - optimal estimation methodology applied as state-of-the-art approach within
-%      cloud retrieval community
-%    - the 4 advantages of CC4CL: consistency, simultaneity, uncertainty,
-%      flexibility
-%    - Are retrieval products as obtained from the various sensors consistent with
-%      each other?
-%    - How do CC4CL cloud property products compare to other existing retrieval
-%      schemes and independent data sources?
-% ---------------------------------------------------------------------------
-
 \introduction
 
-% 1) situation
+Satellite data are an essential source of information in order to better understand and predict climate change. They provide global long-term observations from which geophysical parameters can be derived. These data are used for time-series analysis of climate variables, and also for the assimilation into or validation of climate models \citep{Comiso14,Yang13}. A paramount goal of these efforts is the comprehensive characterization of the global energy and water budgets.
 
-%   clouds in the climate system 
-Satellite data are an essential source of information in order to
-better understand and predict climate change. They provide global long-term
-observations from which geophysical parameters can be derived. These data are used for
-time-series analysis of climate variables, and also for the assimilation into
-or validation of climate models \citep{Comiso14,Yang13}. A paramount goal of
-these efforts is the comprehensive characterization of the global energy and
-water budgets.
+Clouds modify atmospheric windows and radiative forcings of major greenhouse gases \citep{Kiehl97}, and thus considerably constrain the global energy budget. However, clouds are difficult to quantify in terms of composition and temporal or spatial distribution, and possibly are the largest uncertainty in our understanding of climate change \citep{Norris16}. Observations of passive imagers do not sufficiently resolve several important cloud properties, such as vertical structure, sub-pixel heterogeneity, the physical rather than radiatively effective cloud boundary, and the column-integrated ice or liquid water path. Moreover, several background conditions (state of surface and atmosphere, viewing geometry, sensor calibration and spectral response uncertainties) complicate cloud retrievals. These complications propagate uncertainties into derived cloud properties themselves \citep{Hamann14}. Nonetheless, passive satellite imagers are the most widely used instruments for cloud retrievals, providing global coverage at acceptable cost. 
 
-Clouds modify atmospheric windows and radiative forcings of major greenhouse
-gases \citep{Kiehl97}, and thus considerably constrain the global energy
-budget. However, clouds are difficult to quantify in terms of composition and
-temporal or spatial distribution. Observations of passive imagers do not
-sufficiently resolve several important cloud properties, such as
-vertical structure, sub-pixel heterogeneity, and the physical rather than radiatively
-effective cloud boundary. Moreover, several background conditions (state of
-surface and atmosphere, viewing geometry, sensor calibration and spectral
-response uncertainties) complicate cloud retrievals. These
-complications propagate uncertainties into derived cloud properties
-themselves \citep{Hamann14}. Nonetheless, passive satellite imagers are the
-most widely used instruments for cloud retrievals, providing global coverage at
-acceptable cost. 
+There are several satellite-based retrieval frameworks that exploit these types of instruments. One of the earliest of such retrievals is the International Cloud Climatology Project (ISCCP) \citep{Rossow99}. ISCCP provides data on cloud products for 1983--2009, and introduced an approach of cloud type classification based on COT-CTP joint histograms that is popular until today. Current retrieval systems with continuous reprocessing are Pathfinder Atmosphere Extended (PATMOS-x) \citep{Heidinger09,Heidinger12}, EUMETSAT Satellite Application Facility on Climate Monitoring (CM SAF) cLoud, Albedo and RAdiation (CLARA-A1) \citep{Karlsson13}, and MODIS Collection 6 (MODIS C6) \citep{Platnick17}. These retrievals are variable in their auxiliary data sources, approaches, and complexity. They generally apply radiative transfer models and derived look-up tables (LUT) for providing a clear-sky reference and for simulating atmospheric and cloud contributions to TOA radiances. Retrieval algorithms for cloud properties are variable and based on decision trees and thresholding (PPS in CLARA-A1), CO$_{2}$-slicing (MODIS C6), or optimal estimation theory (PATMOS-X). COT and REF are generally derived following \citet{Nakajima90}. However, these microphysical variables are not guaranteed to be radiatively consistent with other cloud parameters, which are quantified independently. For cloud masking, the retrieval frameworks apply various approaches such as Na\"{i}ve Bayes (PATMOS-X), dynamic thresholding (CLARA-A1), or a battery of legacy threshold tests (MODIS C6). Finally, cloud phase or type is determined as a function of a combined convergence/CTT-test (CLARA-A1), the \citet{Pavolonis05} threshold algorithm (PATMOS-X), or a bispectral decision tree for channels at 8.5 and 11 µm (MODIS C6). Compared to AVHRR, MODIS has several additional spectral channels that provide cloud microphysical information \citep{Platnick17}. Given this enhanced spectral resolution, MODIS data provide a better setup for retrieving cloud products than AVHRR. Still, the MODIS C6 cloud top retrieval looses sensitivity for optically thinner clouds (COT $<$ 2, \citet{Menzel10}), and sees into the cloud to an optical thickness of approximately 1 \citep{Baum12}. Despite of some promising results, these studies show that current retrievals underestimate cloud top estimates for optically thin clouds even when the full potential of MODIS spectral resolution is used.
 
-%   Existing cloud property retrievals
-There are several satellite-based climatologies that exploit these types of instruments, such as the
-International Cloud Climatology Project (ISCCP) \citep{Rossow99}, the
-Pathfinder Atmosphere Extended (PATMOS-x) dataset
-\citep{Heidinger09,Heidinger12}, the EUMETSAT Satellite Application
-Facility on Climate Monitoring (CM SAF) cLoud, Albedo and RAdiation (CLARA-A1)
-dataset \citep{Karlsson13}, and the MODIS Collection 6 cloud product \citep{Platnick17}.
-MODIS C6 applies the ``CO$_{2}$-slicing method to retrieve cloud top properties at 5 and 1 km, and the cloud optical and microphysical product algorithm based on the bispectral solar reflectance method at 1 km resolution. Compared to AVHRR, MODIS has several additional spectral channels that provide cloud microphysical information \citep{Platnick17}. Given this enhanced spectral resolution, MODIS data provide a better setup for retrieving cloud products than AVHRR. Still, the MODIS C6 cloud top retrieval looses sensitivity for optically thinner clouds (COT $<$ 2, \citet{Menzel10}).
+There are numerous studies that evaluate the performance of the aforementioned retrievals for cloud cover with weather station data, such as for the Mediterranean \citep{Sanchez17} and conterminous United States \citep{Sun15}. The results are variable, but generally show that the inter-annual correlation is best for PATMOS-X (up to r = 0.94) and worst for CLARA-A1 (r = 0.20 -- 0.7 \textcolor{red}{better provide specific value}). More importantly, these studies emphasize the difficulty of deriving reliable cloud cover trends from AVHRR time series data, as the retrievals overestimate cloud cover decrease by as much as an order of magnitude \citep{Sun15}. There are also several evaluation or validation studies for individual retrieval algorithms. Differences between PATMOS-X microphysical retrievals using MODIS data and the collocated MYD06 product are within retrieval uncertainty \citep{Walther12}. CLARA-A2 underestimates global CTH by 840 m compared to CALIPSO. For PATMOS-X, MODIS C6 and ISCCP, CLARA-A2 underestimates global CTP by 4--90 hPa and has a cloud phase bias of lower than 9\% \citep{CLARA_A2_PVIR}. MODIS C6 CTH bias for low-level boundary layer water clouds is 197 m compared to CALIOP, and the phase detection has been improved for optically thin ice clouds. However, the detection of supercooled water clouds remains problematic \citep{Baum12}. For MODIS C5, global CTH was underestimated relative to CALIOP by 1.4 km \citep{Holz08}.
 
-Satellite observations of clouds are available for the past 40 years. However,
-the production of climatologies and trend analyses is a complicated
-task. Data need to be carefully processed and analysed in order
-to derive a consistent long-term data record from several intercalibrated satellite
-platforms. Consistency can be traded for continuity, and multi-platform
-algorithms could exploit additional data when newer sensors become
-available. Modern sensors provide improved spectral and spatial resolutions,
-and thus potentially better cloud retrievals. However, their data records are too short to produce
-climatologies of $>$ 30 years, and discontinuities are built into time series
-when higher resolution satellite data are input to the processing.
-Major complications of cloud retrievals are optically transparent clouds, multi-layer or overlapping clouds, and effective cloud top height determination. The degree to which these complications can be addressed depends on the nature of the retrieval and the type of input satellite data used. MODIS provides a much larger spectral resolution than just the six AVHRR heritage channels. MODIS and atmospheric sounders are clearly superior when detecting cloud height through the application of the ``CO2-slicing'' technique. However, when consistent climatologies are to be built, time series length and spatiotemporal resolution limit the choice in retrieval type and input satelllite data.  
+Satellite observations of clouds are available for the past 40 years. However, the production of climatologies and trend analyses is a complicated task. Data need to be carefully processed and analysed in order to derive a consistent long-term data record from several inter-calibrated satellite platforms. Consistency can be traded for continuity, and multi-platform algorithms could exploit additional data when newer sensors become available. Modern sensors provide improved spectral and spatial resolutions, and thus potentially better cloud retrievals. However, their data records are too short to produce climatologies of $>$ 30 years, and discontinuities are built into time series when higher resolution satellite data are input to the processing. Major complications of cloud retrievals are optically transparent clouds, multi-layer or overlapping clouds, and effective cloud top height determination. The degree to which these complications can be addressed depends on the nature of the retrieval and the type of input satellite data used. MODIS provides a much larger spectral resolution than just the six AVHRR heritage channels. MODIS and atmospheric sounders are clearly superior when detecting cloud height through the application of the ``CO2-slicing'' technique. However, when consistent climatologies are to be built, time series length and spatiotemporal resolution limit the choice in retrieval type and input satellite data.
 
-%\newpage
+The European Space Agency has established the ESA Climate Change Initiative program \citep{ESA_CCI_web,Hollmann13} in order to tackle the problems outlined above and to advance the knowledge of the climate system. The project's primary focus is the production of thirteen Essential Climate Variables (ECVs) for the three domains ocean, atmosphere, and land. ECVs are being produced for various climate drivers such as ozone, sea surface temperature, ice sheets, and clouds. This study has been financed as part of the cloud ECV component of ESA CCI \citep{ESA_Cloud_CCI_web}. The main objective of ESA Cloud\textunderscore cci is to develop a state-of-the-art open source community cloud retrieval algorithm, which is capable of processing passive imager data for a number of \mbox{(non-)European} satellites covering several decades. We used satellite data as retrieval input from MODIS Aqua and Terra (2000--2014) \citep{King92}, AVHRR on NOAA-7 to NOAA-19 and METOPA (1978--2014) \citep{Jacobowitz03}, ATSR-2 on ERS-2 (1995--2002), and AATSR on ENVISAT (2002--2012). Only the AVHRR-equivalent channels from MODIS and AATSR are used, thus the resulting retrieval data are henceforth referred to as the ``AVHRR heritage dataset''. Moreover, the resulting time series are carefully validated against well established existing climatologies (ISCCP, PATMOS-x, CM SAF, and MODIS Collection 6), reanalysis and model data (ERA-Interim and EC-Earth), ground-truth synoptic observations, and CALIPSO Lidar data.
 
-%   motivation of the Cloud CCI project
-The European Space Agency has established the ESA Climate
-Change Initiative program \citep{ESA_CCI_web,Hollmann13} in order to tackle
-the problems outlined above and to advance the knowledge of the climate system.
-The project's primary focus is the production of
-thirteen Essential Climate Variables (ECVs) for the three domains ocean,
-atmosphere, and land. ECVs are being produced for various climate drivers such as ozone, sea surface
-temperature, ice sheets, and clouds. This study has been financed as part of the cloud ECV component of
-ESA CCI \citep{ESA_Cloud_CCI_web}.
-The main objective of ESA Cloud\textunderscore cci is to develop a state-of-the-art open source community
-cloud retrieval algorithm, which is capable of processing passive imager data for a
-number of \mbox{(non-)European} satellites covering several decades.
-We used satellite data as retrieval input from MODIS Aqua and Terra (2000--2014) \citep{King92}, AVHRR on NOAA-7 to
-NOAA-19 and METOPA (1978--2014) \citep{Jacobowitz03}, and AATSR on ENVISAT (?--?).
-Only the AVHRR-equivalent channels from MODIS and AATSR are
-used, thus the resulting retrieval data are henceforth referred to as the ``AVHRR heritage
-dataset''. Moreover, the
-resulting time series are carefully validated against well established existing climatologies (ISCCP, PATMOS-x, CM SAF, and MODIS
-Collection 6), reanalysis and model data (ERA-Interim and EC-Earth),
-ground-truth synoptic observations, and CALIPSO Lidar data.
+The CC4CL core algorithm was developed in a modular fashion and provides open source access to support distribution and further development within the scientific community. Particular attention was paid to provide the flexibility of processing multiple instruments with one and the same framework, thus maximising the consistency of cloud products independent of the sensor source. Across the solar and thermal spectrum, the framework accounts for physical and radiative consistency amongst all output variables and with input satellite radiances. This is an improvement compared to other established retrieval frameworks. These commonly derive COT and CER by adopting the \citet{Nakajima90} approach, but macrophysical products are estimated independently and are thus radiatively inconsistent with the former variables. Another key novel feature of CC4CL is the production of uncertainty estimates of retrieval parameters through explicit error propagation from input to output data. With these criteria in mind, the Oxford and Rutherford Aerosol and Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} was chosen out of three competing algorithms within a ``Round Robin'' selection process. 
 
-The CC4CL core algorithm was developed in a modular fashion
-and provides open source access to support distribution and further development within the
-scientific community. Particular attention was paid to provide the flexibility of processing multiple instruments
-with one and the same framework, thus maximising the consistency of
-cloud products independent of the sensor source. Across the solar and thermal spectrum, the framework
-accounts for physical and radiative consistency amongst all output variables and with
-input satellite radiances. One key novel feature is the production of uncertainty
-estimates of retrieval parameters through explict error propagation from input to output data. With these criteria in mind, the Oxford and Rutherford Aerosol and
-Cloud (ORAC) retrieval \citep{Thomas09, Poulsen12} was chosen out of three competing algorithms within a ``Round Robin'' selection process. 
-
-In this study, we present the key features of the CC4CL processing algorithm. We particularly focus on discussing the novel features of the framework, which set it apart from other approaches: the optimal estimation approach in general, the explicit uncertainty quantification through rigorous propagation of all known error sources to the final product, and the consistency of our long-term, multi-platform timeseries provided on various resolutions, from 0.5\textdegree\ up to 0.02\textdegree. Through describing all key input data and processing steps, we inform the future user about all relevant features of this new dataset, and its potential applicability in climate studies. We provide an overview of the retrieved and derived output variables. These are initially validated in a comprehensive and detailed analysis of retrieval results that we collocated with Calipso observations for three scenes in the Arctic and one scene in the Gulf of Guinea/West Africa. The results show that CC4CL provides very realistic estimates of cloud top height and cover for optically thick clouds, but produces mixed-layer estimates for cases where optically thin clouds overlap. % for a set of representative L2 output data scenes within a selected region against other retrieval algorithms and independent observations. 
-
-% Key questions, hypotheses, analyses:
-
-% Are the Cloud\textunderscore cci products derived from AVHRR NOAA18, MODIS AQUA, and AATSR comparable? Does CC4CL produce insignificant differences in retrieved variables despite of differences in spectral responses/LUTs? Analyse statistics of COT, CTP, cloud cover such as:
-% \begin{itemize}
-% \item histogram plot
-% \item define distribution type
-% \item mean, median, standard deviation, skewness, kurtosis
-% \item analyse differences for statistical significane (T-test)
-% \item if possible, analyse differences for bias and variance; plot residuals against CALIPSO variables to see if there are systematic differences
-% \item residual analysis
-% \item focus: we see more cloud fraction for MODIS in long term time series, is that confirmed in this scene? Possibly create new resolution data at 1km (MODIS orig.), 2km, 3km, 4km, 5km (AVHRR orig.) to see how cloud fraction changes. Refer to ``How small is a cloud'' paper.
-% \end{itemize}
-
-% Validation with CALIPSO: are there systematic biases? 
-% \begin{itemize}
-% \item analyse residuals between CALIPSO and Cloud\textunderscore cci variables, possibly also as a function of CTP or COT
-% \end{itemize}
-
-
-% PPS und CLARA
-% Round Robin paper: tabellarische Auflistung der Unterscheide zwischen ORAC und anderen.
-% MODIS C6?
-% generell: welche retrieval gibt es, und was sind die Hauptunterschiede? Bayesian, decision trees, ...
-% Stärken und Schwächen von Retrievalverfahren, Vergleichsstudien
-% Unüberwindbare Schwächen: keine vertikale Struktur, Integral von LWP/IWP wird eigentlich nicht gesehen
-
+In this study, we present the key features of the CC4CL processing algorithm. We particularly focus on discussing the novel features of the framework, which set it apart from other approaches: the optimal estimation approach in general, the explicit uncertainty quantification through rigorous propagation of all known error sources to the final product, and the consistency of our long-term, multi-platform time-series provided on various resolutions, from 0.5\textdegree\ up to 0.02\textdegree. Through describing all key input data and processing steps, we inform the future user about important features of this new dataset, and its potential applicability in climate studies. We provide an overview of the retrieved and derived output variables. These are initially validated in a comprehensive and detailed analysis of retrieval results that we collocated with Calipso observations for three scenes in the Arctic and one scene in the Gulf of Guinea/West Africa. The results show that CC4CL produces mixed-layer estimates for cases where optically thin clouds overlap, but provides very realistic estimates of cloud top height and cover for optically thick clouds.
