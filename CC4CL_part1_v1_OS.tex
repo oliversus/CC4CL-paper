@@ -34,37 +34,6 @@ The Advanced Very High Resolution Radiometer (AVHRR) is a cross-track scanner wi
 
 For CC4CL, we use Global Area Coverage (GAC) L1c data on a reduced spatial resolution of 1.1 km $\times$ 4 km at nadir \citep{Devasthale16}. The AVHRR GAC L1c data record, including advanced inter-calibration efforts, was produced for ESA Cloud\textunderscore cci and CMSAF \citep{Schulz09,Karlsson13}. CC4CL processed AVHRR data from 08/1981 (NOAA-7) up to 12/2014 (MetopA + NOAA-19). We applied a filtering technique to channel 3b data, and a database algorithm for splitting midnight orbits and blacklisting. 
 
-\begin{table}[h]
-  \caption{The CC4CL AVHRR-heritage dataset channel characteristics for AVHRR, AATSR, and MODIS. Instrument noise as applied within CC4CL is in reflectance for CC4CL channels 1-3, and in brightness temperature [K] for channels 4-6.}
-  \begin{tabular}{l|p{0.7cm}p{0.7cm}p{1.8cm}p{0.5cm}}
-    \tophline
-    & CC4CL ID & sensor ID & channel width ($\upmu$m) & noise \\
-    \middlehline
-    AVHRR & 1 & 1 & 0.58 -- 0.68 & 0.005 \\
-          & 2 & 2 & 0.725 -- 1.10 & 0.005 \\
-          & 3 & 3a & 1.58 -- 1.64 & 0.005 \\
-          & 4 & 3b & 3.55 -- 3.93 & 0.25 \\
-          & 5 & 4 & 10.50 -- 11.50 & 0.2 \\
-          & 6 & 5 & 11.5 -- 12.5 & 0.2 \\
-    \middlehline
-    MODIS & 1 & 1 & 0.62 -- 0.67 & 0.01 \\
-          & 2 & 2 & 0.841 -- 0.876 & 0.01 \\
-          & 3 & 6 & 1.628 -- 1.652 & 0.01 \\
-          & 4 & 20 & 3.66 -- 3.84 & 0.2 \\
-          & 5 & 31 & 10.78 -- 11.28 & 0.2 \\
-          & 6 & 32 & 11.77 -- 12.27 & 0.2 \\
-    \middlehline
-    AATSR & 1 & 1 & 0.545 -- 0.565 & 0.005 \\
-          & 2 & 2 & 0.649 -- 0.669 & 0.005 \\
-          & 3 & 4 & 1.58 -- 1.64 & 0.005 \\
-          & 4 & 5 & 3.51 -- 3.89 & 0.25 \\
-          & 5 & 6 & 10.4 -- 11.3 & 0.1 \\
-          & 6 & 7 & 11.5 -- 12.5 & 0.1 \\
-    \bottomhline
-  \end{tabular}
-  \label{tab:channels}
-\end{table}
-
 \subsubsection{MODIS}
 
 The Moderate Resolution Imaging Spectroradiometer (MODIS) is carried by NASA's Terra and Aqua satellite platforms in a near sun-synchronous polar orbit at 705 km altitude. Due to orbit control, ECT is a constant 10:30 LST for Terra, and 13:30 LST for Aqua. The Aqua satellite is a member of the ``A-Train'' constellation, which also includes the CALIOP and CloudSat satellites. MODIS is a cross-track scanner with a 2330 km swath width, producing a complete near-global coverage in less than two days \citep{Xiong09}.
@@ -116,13 +85,6 @@ Based on the outcomes of that study \citep{Stengel15}, ORAC was selected to be t
 
 \subsection{Preprocessing}
 
-\begin{figure}[h]
-  % \centering
-  \includegraphics[width=0.47\textwidth]{figures/outline_preprocessor.png}
-  \caption{Schematic of the CC4CL preprocessor.}
-  \label{fig:CC4CL_preprocessor}
-\end{figure}
-
 The CC4CL preprocessor initially defines the dimensions and content of the sensor and preprocessing grids (\autoref{fig:CC4CL_preprocessor}). 
 
 The sensor grid has the same extent and resolution as the input orbit or granule. The sensor grid is filled with sensor radiances and angles, time, and geolocation data (section \ref{sec:L1_data}), whereas surface BRDF (section \ref{sec:BRDF}), snow/ice coverage (from ERA-Interim, section \ref{sec:ERA-Interim}), and surface emissivity (section \ref{sec:emissivity}) are bilinearly interpolated onto that grid. We use BRDF data over land only. For sea pixels, the Cox and Munk ocean surface reflectance model calculates BRDF coefficients as a function of ERA-Interim wind speed. These coefficients also contain foam and underlight components \citep{Sayer10}. The albedo of snow/ice covered pixels is set to globally constant values of 0.958 (Ch1), 0.868 (Ch2), 0.0364 (Ch3), and 0.0 (Ch4), and is area-weighted in the event of fractional sea/ice cover.
@@ -141,54 +103,8 @@ The CC4CL cloud mask is produced by (1) estimating pseudo CALIOP cloud optical d
 
 CC4CL applies a set of ANN for cloud masking, one for each of the illumination conditions day (solar zenith angle $\theta_{0} < 80^{\circ}$), night ($\theta_{0} \ge 90^{\circ}$), and twilight ($80 \le \theta_{0} < 90^{\circ}$). The ANNs are multilayer perceptrons with one input layer, one hidden layer with 50 neurons, and one output layer, which produces ANNCOD ranging from 0 to 1.
 
-\begin{table}[h]
-  \caption{Threshold values applied to ANNCOD data for cloud mask classification.}
-  \begin{tabular}{llllll|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
-    \tophline
-    day & night & twilight & land & sea & snow/ice & threshold \\
-    \middlehline
-    % day
-    x   &       &          & x    &     &          & 0.2  \\
-    x   &       &          & x    &     & x        & 0.35 \\
-    x   &       &          &      & x   &          & 0.1  \\
-    x   &       &          &      & x   & x        & 0.4  \\ \middlehline
-    % night
-    & x     &          & x    &     &          & 0.3  \\
-    & x     &          & x    &     & x        & 0.35 \\
-    & x     &          &      & x   &          & 0.2  \\
-    & x     &          &      & x   & x        & 0.4  \\ \middlehline
-    % twilight
-    &       & x        & x    &     &          & 0.3  \\
-    &       & x        & x    &     & x        & 0.4  \\
-    &       & x        &      & x   &          & 0.35 \\
-    &       & x        &      & x   & x        & 0.4  \\ \bottomhline
-  \end{tabular}
-  \label{tab:ANN_thresholds}
-\end{table}
-
 The various ANNs were trained with NOAA-18 AVHRR L1c data, auxiliary information (ECMWF land-sea mask, snow-ice mask, and surface temperature), and cloud optical depth (COD) ``truth'' data obtained from CALIOP'S 532~nm lidar product (\mbox{CAL\textunderscore LID\textunderscore L2\textunderscore 05kmCLay-Prov-V3-01}). AVHRR Ch3a data were generally excluded. We trained the day ANN with all remaining AVHRR channels, but also excluded Ch3b to be consistent with those NOAA platforms that switch between Ch3b transmission at night and Ch3a at day (NOAA-16, NOAA-17, MetopA) For night and twilight conditions, we produced ANNs both with and without Ch3b data input. This was necessary to avoid misclassification of very cold clouds and/or land surfaces due to Ch3b's very low signal-to-noise ratio. In addition to the days evaluated in the ``Round Robin’’ comparison, we selected 12 further training days in 2008 that contain collocations between NOAA-18 and CALIOP, represent COD seasonality, and provide global coverage. Prior to training, all CALIOP COD values $>$ 1 were set to unity. Auxiliary data input are the ERA-Interim skin temperature, a snow/ice mask derived from ERA-Interim snow depth and sea ice concentration, and the USGS land/sea mask. Finally, we applied a simple correction algorithm to remove a cosine viewing-angle dependency of retrieved ANNCOD. This was necessary, as the maximum viewing angle in the AVHRR training dataset was just 35°.
 The binary cloud mask is estimated by classification of ANNCOD data into clear and cloudy through a set of threshold values. The thresholds themselves vary depending on illumination and surface conditions, namely land, sea, and snow/ice cover (\autoref{tab:ANN_thresholds}), and were quantified by trial and error. As the ANN was trained with AVHRR data only, differences in spectral response functions need to be considered before the ANN can be applied to MODIS and AATSR. We derived appropriate coefficients through linear regression analysis between collocated satellite observations for each input channel pair (\autoref{tab:ANN_coefficients}). The resulting coefficients were applied to MODIS and AATSR satellite data before ANN input.
-
-\begin{table}[h]
-  \caption{Linear regression coefficients between collocated AVHRR and MODIS/AATSR channels.}
-  \begin{tabular}{l|l|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
-    \tophline
-    CC4CL channel ID & sensor & regression coefficients \\
-    \middlehline
-    1 & MODIS & 0.8945 $\times$ ch1 + 2.217 \\
-    & AATSR & 0.8542 $\times$ ch1 \\ \hline
-    2 & MODIS & 0.8336 $\times$ ch2 + 1.749 \\
-    & AATSR & 0.7787 $\times$ ch2 \\ \hline
-    4 & MODIS & 0.9944 $\times$ ch4 + 1.152 \\
-    & AATSR & 1.0626 $\times$ ch4 - 15.777 \\ \hline
-    5 & MODIS & 0.9742 $\times$ ch5 + 7.205 \\
-    & AATSR & 0.9793 $\times$ ch5 + 5.366 \\ \hline
-    6 & MODIS & 0.9676 $\times$ ch6 + 8.408 \\
-    & AATSR & 0.9838 $\times$ ch6 + 4.255 \\
-    \bottomhline
-  \end{tabular}
-  \label{tab:ANN_coefficients}
-\end{table}
 
 We estimate cloud mask uncertainty based on the assumption that this uncertainty is inversely proportional to the difference between retrieved ANNCOD and the threshold applied. As a first step, we generated a CALIOP cloud mask by application of a clear/cloudy threshold value of 0.05. The CALIOP cloud mask is then compared with the collocated ANN mask by quantification of a Percent Correct (PEC) score. PEC estimates the ratio between all correctly classified pixels and the number of all pixels analysed. Finally, the ``truth'' uncertainty is defined as 100 $-$ PEC~\%. We then established the statistical relationship between this uncertainty and the ANNCOD difference to its threshold. Before application of the approach, we normalised differences (ND) to 1. We found a linear correlation between uncertainty and ND for clear cases given by 
 \begin{equation}
@@ -200,85 +116,17 @@ and a second order polynomial correlation for cloudy cases (\autoref{fig:NN_unc}
 \end{equation}
 The equations of these regression fits are used within CC4CL to quantify cloud mask uncertainty as a function of ND.
 
-\begin{figure}[h]
-  % \centering
-  \includegraphics[width=0.47\textwidth]{figures/NN_uncertainty_EQ.png}
-  \caption{Neural network cloud mask uncertainty as derived from observations.}
-  \label{fig:NN_unc}
-\end{figure}
-
 \subsubsection{Cloud typing}\label{sec:Pavolonis}
 
 Cloud phase is determined by application of the Pavolonis cloud typing algorithm \citep{Pavolonis05}. The Pavolonis algorithm outputs 6 cloud types (\cref{tab:cloud_types}), which we then reclassified into water or ice clouds: liquid = fog/warm liquid/supercooled, ice = opaque ice/cirrus/overlap. For CC4CL, the fog type test was deactivated. The algorithm always uses the 0.65, 11, and 12 $\upmu$m channel data. It reads 3.75 $\upmu$m data whenever available, and 1.65 $\upmu$m otherwise. These two different approaches produce nearly identical results, except for certain thin clouds and cloud edges \citep{Pavolonis05}. In addition, we introduced two new cloud types within CC4CL. In response to validation studies, we decided to change the phase of ice clouds whose retrieved CTT is $>$ 273.16 K, the freezing point of water (new cloud type = SWITCHED\textunderscore TO\textunderscore WATER), and of water clouds whose CTT $<$ 233.16 K, the lower limit of supercooled water (SWITCHED\textunderscore TO\textunderscore ICE).
 
 The Pavolonis algorithm has weaknesses in detecting cirrus clouds at high latitudes, which are often misclassified as opaque ice clouds. Performance is considerably better when the VIIRS algorithm is used, which provides additional channels and threshold tests. However, these cannot be applied to our AVHRR heritage dataset \citep{Pavolonis05}.
 
-\begin{table}[h]
-  \caption{Cloud type classification for CC4CL and CALIOP.}
-  \begin{tabular}{l|l||l|l}
-    \tophline
-    ID & CC4CL & ID & CALIOP \\
-    \middlehline
-    0 & clear & 0 & low transparent \\
-    1 & switched to water & 1 & low opaque \\
-    2 & fog & 2 & stratocumulus \\
-    3 & water & 3 & low broken cumulus \\
-    4 & supercooled & 4 & altocumulus \\
-    5 & switched to ice & 5 & altostratus \\
-    6 & opaque ice & 6 & cirrus \\
-    7 & cirrus & 7& deep convective \\
-    8 & overlap & 8 & n/a \\
-    % 9 & probably opaque ice & n/a \\
-    % 10 & probably clear & n/a \\
-    \bottomhline
-  \end{tabular}
-  \label{tab:cloud_types}
-\end{table}
-
 \subsubsection{Optimal estimation retrieval of COT, CER and CTP}
 The optimal estimation retrieval ORAC is a non-linear statistical inversion method based on Bayes' theorem \citep{Rodgers09}. A state vector containing all variables to be retrieved is optimized to obtain the best fit between observed TOA radiances and radiances simulated by a forward model. The retrieval problem is that of finding the minimum value of a cost function. This function is based on a $\upchi^2$ distribution, which is a combination of the squared deviations between the measurements and the forward model and the retrieved state vector and the a priori state vector, each weighted by their associated uncertainties. The important benefits of ORAC, relative to more traditional retrieval methods, are that cloud parameters are retrieved using information in all satellite channels simultaneously, so that the retrieved parameters provide a robust representation of the short-wave and long-wave radiance effects of the observed cloud. The algorithm estimates the retrieval uncertainty, which can be thought as a measure of the consistency between the retrieved cloud parameters and the satellite measurements \citep{Poulsen12}. For a more detailed description of the ORAC algorithm see part II of this publication \citep{GregPart2}.
 \subsection{Post-processing}
 
 For each input pixel, the main processor produces retrieval values for both ice and liquid clouds. The postprocessor will then select the appropriate output variables according to the Pavolonis cloud phase. As described in section \ref{sec:Pavolonis}, the postprocessor changes cloud phase in case retrieved CTT does not match the Pavolonis phase. Finally, output variables are written to primary and secondary NetCDF files (\cref{tab:L2_variables}).
-
-\begin{table*}[h]
-  \caption{CC4CL primary and secondary output. NN = neural network, SV = state vector, PP = postprocessed, PV = \citet{Pavolonis05} algorithm, OE = optimal estimation.}
-  \begin{tabular}{l|l|l|l|l}
-    \tophline
-    variable name & abbrev. & unit & origin & description \\
-    \middlehline
-    \multicolumn{5}{c}{primary variables} \\
-    \middlehline
-    cloud mask & cldmask & 1 & NN & Binary cloud occurrence classification \\
-    cloud type & cldtype & 1 & PV & Categorical cloud type classification \\
-    cloud phase & phflag & 1 & PV &  cloud phase classification \\
-    cloud top pressure & ctp & hPa & SV & OE retrieval estimate of cloud top pressure \\
-    cloud top pressure unc. & ctp\_unc & hPa & SV & OE retrieval unc. of cloud top pressure \\
-    cloud effective radius & cer & $\upmu$m & SV & OE retrieval estimate of cloud effective radius \\
-    cloud effective radius unc. & cer\_unc & $\upmu$m & SV & OE retrieval unc. of cloud effective radius\\
-    cloud optical thickness & cot & 1 & SV & OE retrieval estimate of cloud optical thickness \\
-    cloud optical thickness unc. & cot\_unc & 1 & SV & OE retrieval unc. of cloud optical thickness \\
-    surface temperature & stemp & kelvin & SV & OE retrieval estimate of surface temperature \\
-    surface temperature unc. & stemp\_unc & kelvin & SV & OE retrieval unc. of surface temperature\\
-    \middlehline
-    \multicolumn{5}{c}{secondary variables} \\
-    \middlehline
-    cloud mask unc. & cldmask\_unc & 1 & PP & derived from NN output and threshold distance \\
-    cloud top height & cth & km & PP & derived from CTP and atmospheric profile \\
-    cloud top height unc. & cth\_unc & km & PP & derived from retrieval unc. of CTP \\
-    cloud top temperature & ctt & kelvin & PP & derived from CTP and atmospheric profile \\
-    cloud top temperature unc. & ctt\_unc & kelvin & PP & derived from retrieval unc. of CTP \\
-    cloud water path & cwp & g/m$^2$ & PP & derived from CER and COT \citep{Han94} \\
-    cloud water path unc. & cwp\_unc & g/m$^2$ & PP & derived from retrieval unc. of CER and COT \\
-    cloud albedo at 0.06 $\upmu$m & cla & 1 & PP & derived from CER and COT based on DISORT \citep{Laszlo16} \\
-    cloud albedo at 0.06 $\upmu$m unc. & cla\_unc & 1 & PP & derived from retrieval unc. of CER and COT \\
-    cloud albedo at 0.08 $\upmu$m & cla & 1 & PP & derived from CER and COT based on DISORT \citep{Laszlo16}\\
-    cloud albedo at 0.08 $\upmu$m unc. & cla\_unc & 1 & PP & derived from retrieval unc. of CER and COT \\
-    cloud effective emissivity & cee & 1 & PP & derived from 10.8 and 12.0 $\upmu$m data \\
-    \bottomhline
-  \end{tabular}
-  \label{tab:L2_variables}
-\end{table*}
 
 \section{L2 data - analysis and initial validation}\label{L2_data}
 
@@ -293,59 +141,6 @@ CTP data are approximately normally distributed for all three sensors. Both COT 
 \subsection{Uncertainties}
 
 Median absolute uncertainties are CTP = \load{NA2_ctp_unc_median}26.7 hPa, COT = \load{NA2_cot_unc_median}6.1, CER = \load{NA2_cer_unc_median}2.0 $\upmu$m, and cloud mask = \load{NA2_cmask_unc_median}13.7~\% (\cref{fig:uncertainties}). The median relative retrieval uncertainty (not shown) is relatively low for all three retrieval variables (CTP = \load{NA2_ctp_unc_median_relative}4.7~\%, COT = \load{NA2_cot_unc_median_relative}6.1~\%, CER = \load{NA2_cer_unc_median_relative}2.0~\%). COT uncertainties increase with COT magnitude, and the RGB image (\cref{fig:RGB_07222058}) shows that the largest uncertainties are found in cases of opaque cloud coverage and cloud over sea-ice surfaces. CER results are similar to COT, although relative uncertainties are somewhat lower. Cloud-free areas show increased cloud mask uncertainties, particularly over sea-ice surface areas. Note that the cloud mask uncertainties have been quantified as a function of the normalized difference to the cloud mask threshold, whereas relative retrieval uncertainties (100 $\times$ uncertainty $\div$ retrieved value) are shown for CTP, COT, and CER. 
-
-\begin{table*}[t]
-  \caption{Statistics of CTP, COT, and CER retrieval values for study area NA2 and AVHRR (first value in each cell), MODIS (second value), and AATSR (third value). $\Delta$ values are given for AVHRR minus MODIS (first value in each cell), AVHRR minus AATSR (second value), and MODIS minus AATSR (third value). $^{\ast}$t-Test p-value $>$ 0.1, indicating that differences in mean values are not significant.}
-  \begin{tabular}{l|lllll}
-    \tophline
-                 & mean & median & stddev & skewness & kurtosis \\
-    \middlehline
-             CTP & \load{ctpMeanN18}667.2, \load{ctpMeanMYD}665.0, \load{ctpMeanENV}645.2 & \load{ctpMedN18}667.8, \load{ctpMedMYD}668.1, \load{ctpMedENV}632.4 & \load{ctpStdN18}147.5, \load{ctpStdMYD}142.7, \load{ctpStdENV}146.2 & \load{ctpSkewN18}-0.2, \load{ctpSkewMYD}-0.2, \load{ctpSkewENV}0.1 & \load{ctpKurtN18}-0.4, \load{ctpKurtMYD}-0.4, \load{ctpKurtENV}-0.8 \\
-    $\Delta$ CTP & \load{ctpdMeanN18}2.2$^{\ast}$, \load{ctpdMeanMYD}21.9, \load{ctpdMeanENV}19.7 & \load{ctpdMedN18}4.2, \load{ctpdMedMYD}22.3, \load{ctpdMedENV}18.5 & \load{ctpdStdN18}63.0, \load{ctpdStdMYD}138.7, \load{ctpdStdENV}138.9 & \load{ctpdSkewN18}-0.4, \load{ctpdSkewMYD}-0.3, \load{ctpdSkewENV}-0.3 & \load{ctpdKurtN18}8.2, \load{ctpdKurtMYD}1.0, \load{ctpdKurtENV}0.7 \\
-             COT & \load{cotMeanN18}12.3, \load{cotMeanMYD}13.6, \load{cotMeanENV}13.4 & \load{cotMedN18}7.2, \load{cotMedMYD}8.6, \load{cotMedENV}8.8 & \load{cotStdN18}19.8, \load{cotStdMYD}19.7, \load{cotStdENV}17.6 & \load{cotSkewN18}6.6, \load{cotSkewMYD}5.7, \load{cotSkewENV}5.3 & \load{cotKurtN18}60.5, \load{cotKurtMYD}46.2, \load{cotKurtENV}40.8 \\
-    $\Delta$ COT & \load{cotdMeanN18}-1.3, \load{cotdMeanMYD}-1.2, \load{cotdMeanENV}0.2$^{\ast}$ & \load{cotdMedN18}-0.6, \load{cotdMedMYD}-1.2, \load{cotdMedENV}-0.5 & \load{cotdStdN18}16.5, \load{cotdStdMYD}22.0, \load{cotdStdENV}21.3 & \load{cotdSkewN18}0.7, \load{cotdSkewMYD}2.4, \load{cotdSkewENV}1.8 & \load{cotdKurtN18}59.6, \load{cotdKurtMYD}41.5, \load{cotdKurtENV}33.1 \\
-             CER & \load{cerMeanN18}21.1, \load{cerMeanMYD}19.2, \load{cerMeanENV}21.3 & \load{cerMedN18}16.5, \load{cerMedMYD}14.4, \load{cerMedENV}18.1 & \load{cerStdN18}13.0, \load{cerStdMYD}12.1, \load{cerStdENV}10.9 & \load{cerSkewN18}1.1, \load{cerSkewMYD}1.4, \load{cerSkewENV}0.6 & \load{cerKurtN18}1.4, \load{cerKurtMYD}1.2, \load{cerKurtENV}-0.8 \\
-    $\Delta$ CER & \load{cerdMeanN18}1.9, \load{cerdMeanMYD}-0.2$^{\ast}$, \load{cerdMeanENV}-2.1 & \load{cerdMedN18}0.5, \load{cerdMedMYD}-1.0, \load{cerdMedENV}-1.9 & \load{cerdStdN18}7.0, \load{cerdStdMYD}11.6, \load{cerdStdENV}11.3 & \load{cerdSkewN18}0.8, \load{cerdSkewMYD}0.8, \load{cerdSkewENV}0.5 & \load{cerdKurtN18}7.9, \load{cerdKurtMYD}4.4, \load{cerdKurtENV}2.3 \\
-    \bottomhline
-  \end{tabular}
-  \label{tab:retrieval_statistics}
-\end{table*}
-
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/07222058_ctp_multi.png}
-  \caption{CTP retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
-  \label{fig:CTP_intercomparison}
-%\end{figure*}
-
-%\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/07222058_cot_multi.png}
-  \caption{COT retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
-  \label{fig:COT_intercomparison}
-%\end{figure*}
-
-%\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/07222058_cer_multi.png}
-  \caption{CER retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
-  \label{fig:CER_intercomparison}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=0.68\textwidth]{figures/07222058_uncertainties_absolute.png} %{figures/07222058_uncertainties_percent_goodspacing.png}
-  \caption{Absolute uncertainties of MODIS AQUA retrieval data for study area NA2 and CTP [hPa], COT, CER [$\upmu$m], and Cloud mask [\%].} %{Relative uncertainties [\%] of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
-  \label{fig:uncertainties}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/07222058_histograms.png}
-  \caption{Density histograms of NOAA18 (N18), MODIS AQUA (MYD), and AATSR (ENV) retrieval data for study area NA2 and (a) CTP, (b) COT, and (c) CER.}
-  \label{fig:histograms}
-\end{figure*}
 
 \subsection{Validation with CALIOP}
 
@@ -387,47 +182,8 @@ The CC4CL phase identification agrees continually with none of the three CALIOP 
 
 For ice clouds, the most frequently occurring cloud types are cirrus (ID=6) for CALIOP and overlap (ID=8) or cirrus (ID=7) for CC4CL. Water cloud types are more heterogeneous and for CALIOP predominantly low transparent (ID=0), but altostratus (ID=5) and altocumulus (ID=4) are also frequent. CC4CL water clouds are approximately equally distributed amongst water (ID=3) and supercooled (ID=4) cloud types. %\textcolor{red}{Statistics: percentages for most frequent cloud types. Also: Which cloud type is dominant if CC4CL phase is different to CALIOP phase?}
 
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_07221915.png} %RGB_multi_01x01_07221915.png}
-  \caption{Study area NA1 (North America 1). Red (Ch1), green (Ch2), blue (Ch4 - Ch5) image derived from NOAA18 data resampled to 0.01\textdegree$\times$0.01\textdegree\ resolution. Date of observation is 07/22/2008, 19:15 LST. Orange lines: extent of the collocated MODIS granule, yellow lines: extent of the collocated AATSR orbit, red line: CALIOP track outside (dashed) and within (solid) study area.}
-  \label{fig:RGB_07221915}
-  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07221915_nocot_uncorrectedCtp.png}
-  \caption{Vertical cross section of study area NA1 (North America 1) along the CALIOP track at 5 km horizontal resolution. Top: CTH for CC4CL retrievals (coloured points) and CALIOP measurements (vertical bars), and surface elevation and surface type (blue = open water, green = land, grey = snow/ice). The CALIOP data are shown for those pressure layers where the cumulative top-to-bottom COD exceeds a threshold value of 0 (top layer), 0.15 (mid layer), and 1 (bottom layer). Bottom: Cloud mask/phase (ice to water = red to blue, cloud free = white, not determined = grey) and type (see \cref{tab:cloud_types} for key/value pairs) for all three CALIOP layers and CC4CL retrievals. For CC4CL, cloud phase was averaged when resampling, and cloud type was assigned to the most frequent class per grid box. Sectors of characteristic cloud fields are separated by black vertical lines. Number of pixels n = \load{NA1_length}120}
-  \label{fig:calipso_07221915}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_07222058.png}
-  %\includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07222058.png}
-  \caption{Study area NA2 (North America 2). As \autoref{fig:RGB_07221915}, but at 07/22/2008, 20:58 LST.}
-  \label{fig:RGB_07222058}
-  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07222058_nocot_uncorrectedCtp.png}
-  \caption{Study area NA2 (North America 2). As \autoref{fig:calipso_07221915}, but at 07/22/2008, 20:58 LST (n = \load{NA2_length}163).}
-  \label{fig:calipso_07222058}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_07270810.png} %RGB_multi_01x01_07270810.png}
-  \caption{Study area SIB (Siberia). As \autoref{fig:RGB_07221915}, but at 07/27/2008, 08:10 LST.}
-  \label{fig:RGB_07270810}
-  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07270810_nocot_uncorrectedCtp.png}
-  \caption{Study area SIB (Siberia). As \autoref{fig:calipso_07221915}, but at 07/27/2008, 08:10 LST (n = \load{SIB_length}116).}
-  \label{fig:calipso_07271915}
-\end{figure*}
-
-\begin{figure*}[h]
-  %\centering
-  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_10241345.png} %RGB_multi_01x01_07270810.png}
-  \caption{Study area AFR (Africa). As \autoref{fig:RGB_07221915}, but at 10/24/2009, 13:45 LST.}
-  \label{fig:RGB_10241345}
-  \includegraphics[width=\textwidth]{figures/calipsoVsCci_10241345_nocot_uncorrectedCtp.png}
-  \caption{Study area AFR (Africa). As \autoref{fig:calipso_07221915}, but at 10/24/2009, 13:45 LST. Due to space restrictions, no cloud type values are shown in table. n = \load{AFR_length}1181} 
-  \label{fig:calipso_10241345}
-\end{figure*}
 The scenes investigated and discussed here are just a small subset of the large variety of global cloudiness. We could only find collocations with AATSR data at high latitudes, where multi-layer cloud coverage is common. Under such difficult conditions, the retrieved CTH is a mixture of all radiatively contributing cloud layers. Please refer to \citet{Stengel17} for a quantitative, global validation of CC4CL cloud properties.
+
 \conclusions[Discussion]\label{discussion}
 \subsection{The flexibility of the optimal estimation approach}
 
@@ -475,14 +231,294 @@ Similarly, we find that the cloud phase estimate is only accurate for optimal re
 
 Under optimal conditions for single layer cloud retrievals, CC4CL products show little sensitivity to sensor characteristics. Single layer, optically thick cloud retrievals are very accurate and precise when compared against CALIOP (bias $<$ 240 m), which emphasizes the maturity and robustness of CC4CL. We thus recommend ESA Cloud\textunderscore cci data to be used for multi-annual studies of cloud parameters and more detailed assessments of regional patterns and diurnal variability.
 
+\appendix
+
 \begin{acknowledgements}
 NASA kindly provided MODIS Collection 6 radiance data. ECMWF kindly provided support and assistance with their computing facilities for development and processing.
 This research/work was supported by the European Space Agency through the Cloud\textunderscore cci project (contract No.: 4000109870/13/I-NB).
 \end{acknowledgements}
 
-\appendix
+\bibliographystyle{copernicus}
+\bibliography{CC4CL}
 
-\section{ERA-Interim input fields}
+\clearpage
+
+\begin{figure}[h]
+  % \centering
+  \includegraphics[width=0.47\textwidth]{figures/outline_preprocessor.png}
+  \caption{Schematic of the CC4CL preprocessor.}
+  \label{fig:CC4CL_preprocessor}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h]
+  % \centering
+  \includegraphics[width=0.47\textwidth]{figures/NN_uncertainty_EQ.png}
+  \caption{Neural network cloud mask uncertainty as derived from observations.}
+  \label{fig:NN_unc}
+\end{figure}
+
+\clearpage
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_ctp_multi.png}
+  \caption{CTP retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
+  \label{fig:CTP_intercomparison}
+%\end{figure*}
+
+%\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_cot_multi.png}
+  \caption{COT retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
+  \label{fig:COT_intercomparison}
+%\end{figure*}
+
+%\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_cer_multi.png}
+  \caption{CER retrieval values for study area NA2 with data from AVHRR (left), MODIS (middle), and AATSR (right).}
+  \label{fig:CER_intercomparison}
+\end{figure*}
+
+\clearpage
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=0.68\textwidth]{figures/07222058_uncertainties_absolute.png} %{figures/07222058_uncertainties_percent_goodspacing.png}
+  \caption{Absolute uncertainties of MODIS AQUA retrieval data for study area NA2 and CTP [hPa], COT, CER [$\upmu$m], and Cloud mask [\%].} %{Relative uncertainties [\%] of MODIS AQUA retrieval data for study area NA2 and CTP, COT, CER, and Cloud mask.}
+  \label{fig:uncertainties}
+\end{figure*}
+
+\clearpage
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/07222058_histograms.png}
+  \caption{Density histograms of NOAA18 (N18), MODIS AQUA (MYD), and AATSR (ENV) retrieval data for study area NA2 and (a) CTP, (b) COT, and (c) CER.}
+  \label{fig:histograms}
+\end{figure*}
+
+\clearpage
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_07221915.png} %RGB_multi_01x01_07221915.png}
+  \caption{Study area NA1 (North America 1). Red (Ch1), green (Ch2), blue (Ch4 - Ch5) image derived from NOAA18 data resampled to 0.01\textdegree$\times$0.01\textdegree\ resolution. Date of observation is 07/22/2008, 19:15 LST. Orange lines: extent of the collocated MODIS granule, yellow lines: extent of the collocated AATSR orbit, red line: CALIOP track outside (dashed) and within (solid) study area.}
+  \label{fig:RGB_07221915}
+  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07221915_nocot_uncorrectedCtp.png}
+  \caption{Vertical cross section of study area NA1 (North America 1) along the CALIOP track at 5 km horizontal resolution. Top: CTH for CC4CL retrievals (coloured points) and CALIOP measurements (vertical bars), and surface elevation and surface type (blue = open water, green = land, grey = snow/ice). The CALIOP data are shown for those pressure layers where the cumulative top-to-bottom COD exceeds a threshold value of 0 (top layer), 0.15 (mid layer), and 1 (bottom layer). Bottom: Cloud mask/phase (ice to water = red to blue, cloud free = white, not determined = grey) and type (see \cref{tab:cloud_types} for key/value pairs) for all three CALIOP layers and CC4CL retrievals. For CC4CL, cloud phase was averaged when resampling, and cloud type was assigned to the most frequent class per grid box. Sectors of characteristic cloud fields are separated by black vertical lines. Number of pixels n = \load{NA1_length}120}
+  \label{fig:calipso_07221915}
+\end{figure*}
+
+\clearpage
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_07222058.png}
+  %\includegraphics[width=\textwidth]{figures/RGB_multi_01x01_07222058.png}
+  \caption{Study area NA2 (North America 2). As \autoref{fig:RGB_07221915}, but at 07/22/2008, 20:58 LST.}
+  \label{fig:RGB_07222058}
+  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07222058_nocot_uncorrectedCtp.png}
+  \caption{Study area NA2 (North America 2). As \autoref{fig:calipso_07221915}, but at 07/22/2008, 20:58 LST (n = \load{NA2_length}163).}
+  \label{fig:calipso_07222058}
+\end{figure*}
+
+\clearpage
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_07270810.png} %RGB_multi_01x01_07270810.png}
+  \caption{Study area SIB (Siberia). As \autoref{fig:RGB_07221915}, but at 07/27/2008, 08:10 LST.}
+  \label{fig:RGB_07270810}
+  \includegraphics[width=\textwidth]{figures/calipsoVsCci_07270810_nocot_uncorrectedCtp.png}
+  \caption{Study area SIB (Siberia). As \autoref{fig:calipso_07221915}, but at 07/27/2008, 08:10 LST (n = \load{SIB_length}116).}
+  \label{fig:calipso_07271915}
+\end{figure*}
+
+\clearpage
+
+\begin{figure*}[h]
+  %\centering
+  \includegraphics[width=\textwidth]{figures/RGB_N18_01x01_10241345.png} %RGB_multi_01x01_07270810.png}
+  \caption{Study area AFR (Africa). As \autoref{fig:RGB_07221915}, but at 10/24/2009, 13:45 LST.}
+  \label{fig:RGB_10241345}
+  \includegraphics[width=\textwidth]{figures/calipsoVsCci_10241345_nocot_uncorrectedCtp.png}
+  \caption{Study area AFR (Africa). As \autoref{fig:calipso_07221915}, but at 10/24/2009, 13:45 LST. Due to space restrictions, no cloud type values are shown in table. n = \load{AFR_length}1181} 
+  \label{fig:calipso_10241345}
+\end{figure*}
+
+\clearpage
+
+\begin{table}[h]
+  \caption{The CC4CL AVHRR-heritage dataset channel characteristics for AVHRR, AATSR, and MODIS. Instrument noise as applied within CC4CL is in reflectance for CC4CL channels 1-3, and in brightness temperature [K] for channels 4-6.}
+  \begin{tabular}{l|p{0.7cm}p{0.7cm}p{1.8cm}p{0.5cm}}
+    \tophline
+    & CC4CL ID & sensor ID & channel width ($\upmu$m) & noise \\
+    \middlehline
+    AVHRR & 1 & 1 & 0.58 -- 0.68 & 0.005 \\
+          & 2 & 2 & 0.725 -- 1.10 & 0.005 \\
+          & 3 & 3a & 1.58 -- 1.64 & 0.005 \\
+          & 4 & 3b & 3.55 -- 3.93 & 0.25 \\
+          & 5 & 4 & 10.50 -- 11.50 & 0.2 \\
+          & 6 & 5 & 11.5 -- 12.5 & 0.2 \\
+    \middlehline
+    MODIS & 1 & 1 & 0.62 -- 0.67 & 0.01 \\
+          & 2 & 2 & 0.841 -- 0.876 & 0.01 \\
+          & 3 & 6 & 1.628 -- 1.652 & 0.01 \\
+          & 4 & 20 & 3.66 -- 3.84 & 0.2 \\
+          & 5 & 31 & 10.78 -- 11.28 & 0.2 \\
+          & 6 & 32 & 11.77 -- 12.27 & 0.2 \\
+    \middlehline
+    AATSR & 1 & 1 & 0.545 -- 0.565 & 0.005 \\
+          & 2 & 2 & 0.649 -- 0.669 & 0.005 \\
+          & 3 & 4 & 1.58 -- 1.64 & 0.005 \\
+          & 4 & 5 & 3.51 -- 3.89 & 0.25 \\
+          & 5 & 6 & 10.4 -- 11.3 & 0.1 \\
+          & 6 & 7 & 11.5 -- 12.5 & 0.1 \\
+    \bottomhline
+  \end{tabular}
+  \label{tab:channels}
+\end{table}
+
+\clearpage
+
+\begin{table}[h]
+  \caption{Threshold values applied to ANNCOD data for cloud mask classification.}
+  \begin{tabular}{llllll|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
+    \tophline
+    day & night & twilight & land & sea & snow/ice & threshold \\
+    \middlehline
+    % day
+    x   &       &          & x    &     &          & 0.2  \\
+    x   &       &          & x    &     & x        & 0.35 \\
+    x   &       &          &      & x   &          & 0.1  \\
+    x   &       &          &      & x   & x        & 0.4  \\ \middlehline
+    % night
+    & x     &          & x    &     &          & 0.3  \\
+    & x     &          & x    &     & x        & 0.35 \\
+    & x     &          &      & x   &          & 0.2  \\
+    & x     &          &      & x   & x        & 0.4  \\ \middlehline
+    % twilight
+    &       & x        & x    &     &          & 0.3  \\
+    &       & x        & x    &     & x        & 0.4  \\
+    &       & x        &      & x   &          & 0.35 \\
+    &       & x        &      & x   & x        & 0.4  \\ \bottomhline
+  \end{tabular}
+  \label{tab:ANN_thresholds}
+\end{table}
+
+\clearpage
+
+\begin{table}[h]
+  \caption{Linear regression coefficients between collocated AVHRR and MODIS/AATSR channels.}
+  \begin{tabular}{l|l|l} %{P{0.3cm}P{0.3cm}P{0.7cm}P{0.3cm}P{0.2cm}P{1cm}|P{0.7cm}}
+    \tophline
+    CC4CL channel ID & sensor & regression coefficients \\
+    \middlehline
+    1 & MODIS & 0.8945 $\times$ ch1 + 2.217 \\
+    & AATSR & 0.8542 $\times$ ch1 \\ \hline
+    2 & MODIS & 0.8336 $\times$ ch2 + 1.749 \\
+    & AATSR & 0.7787 $\times$ ch2 \\ \hline
+    4 & MODIS & 0.9944 $\times$ ch4 + 1.152 \\
+    & AATSR & 1.0626 $\times$ ch4 - 15.777 \\ \hline
+    5 & MODIS & 0.9742 $\times$ ch5 + 7.205 \\
+    & AATSR & 0.9793 $\times$ ch5 + 5.366 \\ \hline
+    6 & MODIS & 0.9676 $\times$ ch6 + 8.408 \\
+    & AATSR & 0.9838 $\times$ ch6 + 4.255 \\
+    \bottomhline
+  \end{tabular}
+  \label{tab:ANN_coefficients}
+\end{table}
+
+\clearpage
+
+\begin{table}[h]
+  \caption{Cloud type classification for CC4CL and CALIOP.}
+  \begin{tabular}{l|l||l|l}
+    \tophline
+    ID & CC4CL & ID & CALIOP \\
+    \middlehline
+    0 & clear & 0 & low transparent \\
+    1 & switched to water & 1 & low opaque \\
+    2 & fog & 2 & stratocumulus \\
+    3 & water & 3 & low broken cumulus \\
+    4 & supercooled & 4 & altocumulus \\
+    5 & switched to ice & 5 & altostratus \\
+    6 & opaque ice & 6 & cirrus \\
+    7 & cirrus & 7& deep convective \\
+    8 & overlap & 8 & n/a \\
+    % 9 & probably opaque ice & n/a \\
+    % 10 & probably clear & n/a \\
+    \bottomhline
+  \end{tabular}
+  \label{tab:cloud_types}
+\end{table}
+
+\clearpage
+
+\begin{table*}[h]
+  \caption{CC4CL primary and secondary output. NN = neural network, SV = state vector, PP = postprocessed, PV = \citet{Pavolonis05} algorithm, OE = optimal estimation.}
+  \begin{tabular}{l|l|l|l|l}
+    \tophline
+    variable name & abbrev. & unit & origin & description \\
+    \middlehline
+    \multicolumn{5}{c}{primary variables} \\
+    \middlehline
+    cloud mask & cldmask & 1 & NN & Binary cloud occurrence classification \\
+    cloud type & cldtype & 1 & PV & Categorical cloud type classification \\
+    cloud phase & phflag & 1 & PV &  cloud phase classification \\
+    cloud top pressure & ctp & hPa & SV & OE retrieval estimate of cloud top pressure \\
+    cloud top pressure unc. & ctp\_unc & hPa & SV & OE retrieval unc. of cloud top pressure \\
+    cloud effective radius & cer & $\upmu$m & SV & OE retrieval estimate of cloud effective radius \\
+    cloud effective radius unc. & cer\_unc & $\upmu$m & SV & OE retrieval unc. of cloud effective radius\\
+    cloud optical thickness & cot & 1 & SV & OE retrieval estimate of cloud optical thickness \\
+    cloud optical thickness unc. & cot\_unc & 1 & SV & OE retrieval unc. of cloud optical thickness \\
+    surface temperature & stemp & kelvin & SV & OE retrieval estimate of surface temperature \\
+    surface temperature unc. & stemp\_unc & kelvin & SV & OE retrieval unc. of surface temperature\\
+    \middlehline
+    \multicolumn{5}{c}{secondary variables} \\
+    \middlehline
+    cloud mask unc. & cldmask\_unc & 1 & PP & derived from NN output and threshold distance \\
+    cloud top height & cth & km & PP & derived from CTP and atmospheric profile \\
+    cloud top height unc. & cth\_unc & km & PP & derived from retrieval unc. of CTP \\
+    cloud top temperature & ctt & kelvin & PP & derived from CTP and atmospheric profile \\
+    cloud top temperature unc. & ctt\_unc & kelvin & PP & derived from retrieval unc. of CTP \\
+    cloud water path & cwp & g/m$^2$ & PP & derived from CER and COT \citep{Han94} \\
+    cloud water path unc. & cwp\_unc & g/m$^2$ & PP & derived from retrieval unc. of CER and COT \\
+    cloud albedo at 0.06 $\upmu$m & cla & 1 & PP & derived from CER and COT based on DISORT \citep{Laszlo16} \\
+    cloud albedo at 0.06 $\upmu$m unc. & cla\_unc & 1 & PP & derived from retrieval unc. of CER and COT \\
+    cloud albedo at 0.08 $\upmu$m & cla & 1 & PP & derived from CER and COT based on DISORT \citep{Laszlo16}\\
+    cloud albedo at 0.08 $\upmu$m unc. & cla\_unc & 1 & PP & derived from retrieval unc. of CER and COT \\
+    cloud effective emissivity & cee & 1 & PP & derived from 10.8 and 12.0 $\upmu$m data \\
+    \bottomhline
+  \end{tabular}
+  \label{tab:L2_variables}
+\end{table*}
+
+\clearpage
+
+\begin{table*}[t]
+  \caption{Statistics of CTP, COT, and CER retrieval values for study area NA2 and AVHRR (first value in each cell), MODIS (second value), and AATSR (third value). $\Delta$ values are given for AVHRR minus MODIS (first value in each cell), AVHRR minus AATSR (second value), and MODIS minus AATSR (third value). $^{\ast}$t-Test p-value $>$ 0.1, indicating that differences in mean values are not significant.}
+  \begin{tabular}{l|lllll}
+    \tophline
+                 & mean & median & stddev & skewness & kurtosis \\
+    \middlehline
+             CTP & \load{ctpMeanN18}667.2, \load{ctpMeanMYD}665.0, \load{ctpMeanENV}645.2 & \load{ctpMedN18}667.8, \load{ctpMedMYD}668.1, \load{ctpMedENV}632.4 & \load{ctpStdN18}147.5, \load{ctpStdMYD}142.7, \load{ctpStdENV}146.2 & \load{ctpSkewN18}-0.2, \load{ctpSkewMYD}-0.2, \load{ctpSkewENV}0.1 & \load{ctpKurtN18}-0.4, \load{ctpKurtMYD}-0.4, \load{ctpKurtENV}-0.8 \\
+    $\Delta$ CTP & \load{ctpdMeanN18}2.2$^{\ast}$, \load{ctpdMeanMYD}21.9, \load{ctpdMeanENV}19.7 & \load{ctpdMedN18}4.2, \load{ctpdMedMYD}22.3, \load{ctpdMedENV}18.5 & \load{ctpdStdN18}63.0, \load{ctpdStdMYD}138.7, \load{ctpdStdENV}138.9 & \load{ctpdSkewN18}-0.4, \load{ctpdSkewMYD}-0.3, \load{ctpdSkewENV}-0.3 & \load{ctpdKurtN18}8.2, \load{ctpdKurtMYD}1.0, \load{ctpdKurtENV}0.7 \\
+             COT & \load{cotMeanN18}12.3, \load{cotMeanMYD}13.6, \load{cotMeanENV}13.4 & \load{cotMedN18}7.2, \load{cotMedMYD}8.6, \load{cotMedENV}8.8 & \load{cotStdN18}19.8, \load{cotStdMYD}19.7, \load{cotStdENV}17.6 & \load{cotSkewN18}6.6, \load{cotSkewMYD}5.7, \load{cotSkewENV}5.3 & \load{cotKurtN18}60.5, \load{cotKurtMYD}46.2, \load{cotKurtENV}40.8 \\
+    $\Delta$ COT & \load{cotdMeanN18}-1.3, \load{cotdMeanMYD}-1.2, \load{cotdMeanENV}0.2$^{\ast}$ & \load{cotdMedN18}-0.6, \load{cotdMedMYD}-1.2, \load{cotdMedENV}-0.5 & \load{cotdStdN18}16.5, \load{cotdStdMYD}22.0, \load{cotdStdENV}21.3 & \load{cotdSkewN18}0.7, \load{cotdSkewMYD}2.4, \load{cotdSkewENV}1.8 & \load{cotdKurtN18}59.6, \load{cotdKurtMYD}41.5, \load{cotdKurtENV}33.1 \\
+             CER & \load{cerMeanN18}21.1, \load{cerMeanMYD}19.2, \load{cerMeanENV}21.3 & \load{cerMedN18}16.5, \load{cerMedMYD}14.4, \load{cerMedENV}18.1 & \load{cerStdN18}13.0, \load{cerStdMYD}12.1, \load{cerStdENV}10.9 & \load{cerSkewN18}1.1, \load{cerSkewMYD}1.4, \load{cerSkewENV}0.6 & \load{cerKurtN18}1.4, \load{cerKurtMYD}1.2, \load{cerKurtENV}-0.8 \\
+    $\Delta$ CER & \load{cerdMeanN18}1.9, \load{cerdMeanMYD}-0.2$^{\ast}$, \load{cerdMeanENV}-2.1 & \load{cerdMedN18}0.5, \load{cerdMedMYD}-1.0, \load{cerdMedENV}-1.9 & \load{cerdStdN18}7.0, \load{cerdStdMYD}11.6, \load{cerdStdENV}11.3 & \load{cerdSkewN18}0.8, \load{cerdSkewMYD}0.8, \load{cerdSkewENV}0.5 & \load{cerdKurtN18}7.9, \load{cerdKurtMYD}4.4, \load{cerdKurtENV}2.3 \\
+    \bottomhline
+  \end{tabular}
+  \label{tab:retrieval_statistics}
+\end{table*}
+
+\clearpage
+
+\appendixtables
 
 \begin{table}[ht]
   \caption{ERA-Interim variables used within CC4CL. Variables marked with * are available at 0.1\textdegree spatial resolution, all others default to 0.72\textdegree.}
@@ -515,15 +551,13 @@ This research/work was supported by the European Space Agency through the Cloud\
   \label{tab:ERA-Interim}
 \end{table}
 
-\section{Full list of variables in CC4CL Level-2 files}   
+\clearpage
 
 \begin{table}[ht]
-  \caption{CC4CL L2 output variables. NN = neural network.}
+  \caption{CC4CL L2 primary output variables. NN = neural network.}
   \begin{tabular}{l|l|l}
     \tophline
     variable name & abbrev. & unit \\
-    \middlehline
-    \multicolumn{3}{c}{primary variables} \\
     \middlehline
     latitude & lat & degree \\
     longitude & lon & degree \\
@@ -552,8 +586,18 @@ This research/work was supported by the European Space Agency through the Cloud\
     snow/ice mask & siflag & (0,1) \\
     illumination flag & ilflag & 1 \\
     surface temperature & stemp & kelvin \\
-    \middlehline
-    \multicolumn{3}{c}{secondary variables} \\
+    \bottomhline
+  \end{tabular}
+  \label{tab:L2_primary_variables_appendix}
+\end{table}
+
+\clearpage
+
+\begin{table}[ht]
+  \caption{CC4CL L2 secondary output variables. NN = neural network.}
+  \begin{tabular}{l|l|l}
+    \tophline
+    variable name & abbrev. & unit \\
     \middlehline
     cloud optical thickness a priori & cot\textunderscore ap & 1 \\
 	cloud optical thickness first guess & cot\textunderscore fg & 1 \\
@@ -573,5 +617,6 @@ This research/work was supported by the European Space Agency through the Cloud\
 	degrees of freedom signal & deg\_free & 1 \\	
     \bottomhline
   \end{tabular}
-  \label{tab:L2_variables_appendix}
+  \label{tab:L2_secondary_variables_appendix}
 \end{table}
+
